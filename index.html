@@ -1,0 +1,5916 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ff5a00">
+<title>WITHFAST -- إدارة التسعير والمخزون</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+
+:root{
+    --orange:#ff5a00;
+    --orange-2:#ff7a18;
+    --orange-3:#ffb27d;
+    --dark:#171717;
+    --dark-2:#252525;
+    --gray:#777;
+    --gray-2:#999;
+    --line:#e8e8e8;
+    --bg:#f5f3ef;
+    --white:#fff;
+    --green:#159447;
+    --green-bg:#eaf8ef;
+    --red:#d83a32;
+    --red-bg:#fff0ee;
+    --yellow:#d58a00;
+    --yellow-bg:#fff7df;
+    --radius:22px;
+    --shadow:0 10px 30px rgba(0,0,0,.07);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:"Cairo",Arial,sans-serif;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(0,0,0,.012) 0px,
+            rgba(0,0,0,.012) 1px,
+            transparent 1px,
+            transparent 5px
+        ),
+        var(--bg);
+    color:var(--dark);
+    min-height:100vh;
+}
+
+button,
+input,
+select,
+textarea{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+img{
+    max-width:100%;
+    display:block;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.hero{
+    width:100%;
+    position:relative;
+    overflow:hidden;
+    background:#fff;
+    border-bottom:1px solid #eee;
+}
+
+.hero-image{
+    width:100%;
+    height:auto;
+    min-height:260px;
+    object-fit:cover;
+    object-position:center;
+}
+
+.hero-overlay{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(
+        to bottom,
+        rgba(255,255,255,0) 60%,
+        rgba(245,243,239,.88) 100%
+    );
+}
+
+.top-controls{
+    position:absolute;
+    top:18px;
+    right:18px;
+    left:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:5;
+}
+
+.control-group{
+    display:flex;
+    gap:10px;
+}
+
+.circle-btn{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:#fff;
+    border:1px solid rgba(0,0,0,.08);
+    box-shadow:0 7px 20px rgba(0,0,0,.1);
+    display:grid;
+    place-items:center;
+    color:var(--orange);
+    transition:.2s ease;
+}
+
+.circle-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+.circle-btn svg{
+    width:23px;
+    height:23px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.hero-logo{
+    position:absolute;
+    left:50%;
+    top:22px;
+    transform:translateX(-50%);
+    z-index:4;
+    max-width:190px;
+    max-height:70px;
+    object-fit:contain;
+    filter:drop-shadow(0 5px 12px rgba(0,0,0,.08));
+}
+
+.hero-bottom{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    display:flex;
+    justify-content:center;
+    padding:18px;
+    z-index:4;
+}
+
+.brand-strip{
+    width:min(950px,92%);
+    background:var(--orange);
+    color:#fff;
+    overflow:hidden;
+    border-radius:16px;
+    box-shadow:0 10px 25px rgba(255,90,0,.22);
+    height:40px;
+    display:flex;
+    align-items:center;
+}
+
+.marquee{
+    white-space:nowrap;
+    animation:moveText 18s linear infinite;
+    font-weight:700;
+    font-size:14px;
+}
+
+.marquee span{
+    margin:0 35px;
+}
+
+@keyframes moveText{
+    from{transform:translateX(100%);}
+    to{transform:translateX(-100%);}
+}
+
+/* =========================
+   NAV
+========================= */
+
+.main-wrap{
+    width:min(1250px,94%);
+    margin:0 auto;
+}
+
+.tabs{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+.tab{
+    background:#fff;
+    border:1px solid var(--line);
+    min-height:75px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:5px;
+    color:#666;
+    font-weight:700;
+    transition:.2s ease;
+    box-shadow:0 5px 18px rgba(0,0,0,.035);
+}
+
+.tab:hover{
+    border-color:#ffc6a5;
+}
+
+.tab.active{
+    color:#fff;
+    background:var(--orange);
+    border-color:var(--orange);
+    box-shadow:0 9px 25px rgba(255,90,0,.2);
+}
+
+.tab svg{
+    width:25px;
+    height:25px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section{
+    display:none;
+    padding:22px 0 50px;
+    animation:fadeUp .25s ease;
+}
+
+.section.active{
+    display:block;
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.section-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:18px;
+}
+
+.section-title h1{
+    font-size:25px;
+    font-weight:800;
+}
+
+.section-title p{
+    color:var(--gray);
+    font-size:13px;
+    margin-top:3px;
+}
+
+.title-mark{
+    width:9px;
+    height:42px;
+    border-radius:5px;
+    background:var(--orange);
+}
+
+.title-side{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card{
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+}
+
+.card-pad{
+    padding:20px;
+}
+
+.grid{
+    display:grid;
+    gap:15px;
+}
+
+.grid-2{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.grid-3{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.grid-4{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard{
+    margin-bottom:18px;
+}
+
+.metric{
+    padding:17px;
+    position:relative;
+    overflow:hidden;
+}
+
+.metric:before{
+    content:"";
+    position:absolute;
+    width:65px;
+    height:65px;
+    border:2px solid rgba(255,90,0,.12);
+    transform:rotate(45deg);
+    left:-22px;
+    bottom:-30px;
+}
+
+.metric-label{
+    color:#777;
+    font-size:12px;
+    font-weight:600;
+}
+
+.metric-value{
+    font-size:24px;
+    font-weight:800;
+    margin-top:4px;
+}
+
+.metric-sub{
+    color:#999;
+    font-size:11px;
+}
+
+/* =========================
+   PRICING
+========================= */
+
+.recipe-list{
+    display:grid;
+    gap:18px;
+}
+
+.recipe-card{
+    overflow:hidden;
+}
+
+.recipe-header{
+    padding:18px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.recipe-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.geometry-icon{
+    width:44px;
+    height:44px;
+    border:2px solid var(--orange);
+    transform:rotate(45deg);
+    display:grid;
+    place-items:center;
+    flex-shrink:0;
+}
+
+.geometry-icon-inner{
+    width:17px;
+    height:17px;
+    background:var(--orange);
+}
+
+.recipe-title-text{
+    transform:none;
+}
+
+.recipe-title-text h2{
+    font-size:18px;
+}
+
+.recipe-title-text span{
+    font-size:11px;
+    color:#999;
+}
+
+.recipe-actions{
+    display:flex;
+    gap:7px;
+}
+
+.icon-btn{
+    width:38px;
+    height:38px;
+    border-radius:11px;
+    border:1px solid var(--line);
+    background:#fff;
+    display:grid;
+    place-items:center;
+}
+
+.icon-btn:hover{
+    border-color:#ffba91;
+    color:var(--orange);
+}
+
+.icon-btn svg{
+    width:18px;
+    height:18px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.recipe-body{
+    padding:18px;
+}
+
+.price-input-area{
+    background:#fff8f3;
+    border:1px solid #ffe0cc;
+    border-radius:18px;
+    padding:16px;
+    margin-bottom:18px;
+}
+
+.price-input-title{
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:12px;
+    color:#9a3d00;
+}
+
+.price-fields{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.field label{
+    font-size:11px;
+    color:#777;
+    font-weight:700;
+}
+
+.input{
+    width:100%;
+    height:44px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:0 12px;
+    background:#fff;
+    color:#222;
+    outline:none;
+    font-size:14px;
+    font-weight:600;
+}
+
+.input:focus{
+    border-color:var(--orange);
+    box-shadow:0 0 0 3px rgba(255,90,0,.1);
+}
+
+.calculate-row{
+    display:flex;
+    justify-content:flex-start;
+    margin-top:12px;
+}
+
+.btn{
+    min-height:43px;
+    border:0;
+    border-radius:12px;
+    padding:0 17px;
+    font-weight:800;
+    font-size:13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:.2s ease;
+}
+
+.btn-primary{
+    background:var(--orange);
+    color:#fff;
+}
+
+.btn-primary:hover{
+    background:#ed4e00;
+    transform:translateY(-1px);
+}
+
+.btn-secondary{
+    background:#fff;
+    color:#333;
+    border:1px solid #ddd;
+}
+
+.btn-danger{
+    background:#fff1ef;
+    color:var(--red);
+    border:1px solid #ffd0cb;
+}
+
+.btn-green{
+    background:var(--green-bg);
+    color:var(--green);
+    border:1px solid #bce8ca;
+}
+
+.btn svg{
+    width:17px;
+    height:17px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.cost-result{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:18px;
+}
+
+.result-box{
+    border:1px solid var(--line);
+    border-radius:15px;
+    padding:13px;
+    background:#fff;
+}
+
+.result-box.highlight{
+    border-color:#ffc5a2;
+    background:#fff8f3;
+}
+
+.result-label{
+    color:#888;
+    font-size:11px;
+}
+
+.result-number{
+    font-size:20px;
+    font-weight:800;
+    margin-top:2px;
+}
+
+.recipe-details-title{
+    font-size:15px;
+    font-weight:800;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.recipe-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:680px;
+}
+
+.table-scroll{
+    overflow-x:auto;
+}
+
+.recipe-table th{
+    text-align:right;
+    font-size:11px;
+    color:#888;
+    background:#fafafa;
+    padding:10px;
+    border-bottom:1px solid var(--line);
+}
+
+.recipe-table td{
+    padding:9px 10px;
+    border-bottom:1px solid #f0f0f0;
+    font-size:12px;
+}
+
+.recipe-table .small-input{
+    width:105px;
+    height:36px;
+    border:1px solid #ddd;
+    border-radius:9px;
+    padding:0 8px;
+}
+
+.remove-row{
+    width:31px;
+    height:31px;
+    border-radius:8px;
+    background:#fff1ef;
+    border:1px solid #ffd1cb;
+    color:var(--red);
+}
+
+.breakdown{
+    margin-top:18px;
+}
+
+.breakdown-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:7px;
+}
+
+.breakdown-row{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:9px 11px;
+    background:#fafafa;
+    border-radius:10px;
+    font-size:12px;
+}
+
+.breakdown-row strong{
+    font-weight:800;
+}
+
+.profit-box{
+    margin-top:15px;
+    padding:15px;
+    border-radius:15px;
+    background:#f8f8f8;
+    border:1px solid var(--line);
+}
+
+.profit-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.profit-item{
+    background:#fff;
+    padding:11px;
+    border-radius:11px;
+}
+
+.profit-item span{
+    display:block;
+    font-size:10px;
+    color:#888;
+}
+
+.profit-item strong{
+    font-size:17px;
+}
+
+/* =========================
+   COMPARISON
+========================= */
+
+.comparison{
+    margin-top:20px;
+}
+
+.comparison table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.comparison th,
+.comparison td{
+    padding:12px;
+    border-bottom:1px solid var(--line);
+    text-align:right;
+    font-size:12px;
+}
+
+.comparison th{
+    background:#fafafa;
+    color:#777;
+}
+
+.high-profit{
+    background:#eefaf1 !important;
+}
+
+.low-profit{
+    background:#fff1ef !important;
+}
+
+.add-recipe-area{
+    margin-top:18px;
+    display:flex;
+    justify-content:center;
+}
+
+/* =========================
+   INVENTORY
+========================= */
+
+.inventory-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-bottom:15px;
+}
+
+.stock-status{
+    padding:4px 9px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:800;
+    display:inline-block;
+}
+
+.status-ok{
+    color:var(--green);
+    background:var(--green-bg);
+}
+
+.status-low{
+    color:var(--red);
+    background:var(--red-bg);
+}
+
+.inventory-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:800px;
+}
+
+.inventory-table th,
+.inventory-table td{
+    padding:11px;
+    border-bottom:1px solid var(--line);
+    text-align:right;
+    font-size:12px;
+}
+
+.inventory-table th{
+    color:#777;
+    background:#fafafa;
+}
+
+.qty-input{
+    width:100px;
+    height:36px;
+    border:1px solid #ddd;
+    border-radius:9px;
+    padding:0 8px;
+}
+
+.capacity{
+    margin-top:18px;
+}
+
+.capacity-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.capacity-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:15px;
+    background:#fff;
+}
+
+.capacity-card h3{
+    font-size:14px;
+}
+
+.capacity-number{
+    font-size:25px;
+    font-weight:800;
+    color:var(--orange);
+    margin-top:5px;
+}
+
+.capacity-limit{
+    color:#777;
+    font-size:11px;
+}
+
+/* =========================
+   LOGS
+========================= */
+
+.filter-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.logs-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:800px;
+}
+
+.logs-table th,
+.logs-table td{
+    padding:10px;
+    border-bottom:1px solid var(--line);
+    font-size:11px;
+    text-align:right;
+}
+
+.logs-table th{
+    background:#fafafa;
+    color:#777;
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settings-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.settings-card{
+    padding:20px;
+}
+
+.settings-card h2{
+    font-size:17px;
+    margin-bottom:5px;
+}
+
+.settings-card p{
+    color:#888;
+    font-size:12px;
+    margin-bottom:15px;
+}
+
+.setting-fields{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.48);
+    z-index:1000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+}
+
+.modal-backdrop.open{
+    display:flex;
+}
+
+.modal{
+    width:min(700px,100%);
+    max-height:92vh;
+    overflow:auto;
+    background:#fff;
+    border-radius:25px;
+    box-shadow:0 30px 80px rgba(0,0,0,.3);
+}
+
+.modal-header{
+    padding:18px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.modal-header h2{
+    font-size:18px;
+}
+
+.modal-close{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    background:#f7f7f7;
+    border:1px solid #eee;
+}
+
+.modal-body{
+    padding:20px;
+}
+
+.modal-footer{
+    padding:15px 20px;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:flex-start;
+    gap:9px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.form-grid .full{
+    grid-column:1/-1;
+}
+
+.modal-note{
+    margin-top:12px;
+    padding:11px;
+    background:#fff8f3;
+    border:1px solid #ffe0cc;
+    border-radius:11px;
+    color:#8d3b08;
+    font-size:11px;
+}
+
+.dynamic-rows{
+    display:grid;
+    gap:8px;
+    margin-top:10px;
+}
+
+.dynamic-row{
+    display:grid;
+    grid-template-columns:1.5fr 1fr 1fr 40px;
+    gap:7px;
+    align-items:center;
+    padding:8px;
+    background:#fafafa;
+    border:1px solid #eee;
+    border-radius:11px;
+}
+
+.dynamic-row select,
+.dynamic-row input{
+    width:100%;
+    height:38px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:0 7px;
+    background:#fff;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-results{
+    display:grid;
+    gap:8px;
+    margin-top:14px;
+}
+
+.search-result{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.search-result strong{
+    font-size:13px;
+}
+
+.search-result span{
+    color:#999;
+    font-size:11px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    bottom:22px;
+    left:50%;
+    transform:translate(-50%,20px);
+    opacity:0;
+    pointer-events:none;
+    z-index:3000;
+    background:#202020;
+    color:#fff;
+    border-radius:12px;
+    padding:12px 18px;
+    font-size:12px;
+    font-weight:700;
+    box-shadow:0 15px 35px rgba(0,0,0,.2);
+    transition:.25s ease;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty{
+    text-align:center;
+    padding:40px 20px;
+    color:#888;
+}
+
+.empty-shape{
+    width:50px;
+    height:50px;
+    border:2px solid var(--orange);
+    margin:0 auto 14px;
+    transform:rotate(45deg);
+    display:grid;
+    place-items:center;
+}
+
+.empty-shape:after{
+    content:"";
+    width:17px;
+    height:17px;
+    background:var(--orange);
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer{
+    text-align:center;
+    color:#aaa;
+    font-size:11px;
+    padding:0 0 30px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:800px){
+
+    .hero-image{
+        min-height:230px;
+    }
+
+    .hero-logo{
+        max-width:145px;
+        top:17px;
+    }
+
+    .circle-btn{
+        width:42px;
+        height:42px;
+    }
+
+    .tabs{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4{
+        grid-template-columns:1fr;
+    }
+
+    .price-fields{
+        grid-template-columns:1fr;
+    }
+
+    .cost-result{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .breakdown-grid{
+        grid-template-columns:1fr;
+    }
+
+    .profit-grid{
+        grid-template-columns:1fr;
+    }
+
+    .capacity-grid{
+        grid-template-columns:1fr;
+    }
+
+    .settings-grid{
+        grid-template-columns:1fr;
+    }
+
+    .filter-row{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid .full{
+        grid-column:auto;
+    }
+
+    .dynamic-row{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .dynamic-row select{
+        grid-column:1/-1;
+    }
+
+    .recipe-header{
+        align-items:flex-start;
+    }
+
+    .section-title{
+        align-items:flex-start;
+    }
+
+    .section-title h1{
+        font-size:21px;
+    }
+}
+
+@media(max-width:480px){
+
+    .main-wrap{
+        width:92%;
+    }
+
+    .hero-image{
+        min-height:180px;
+    }
+
+    .hero-logo{
+        max-width:120px;
+    }
+
+    .brand-strip{
+        height:34px;
+    }
+
+    .marquee{
+        font-size:11px;
+    }
+
+    .tab{
+        min-height:67px;
+        font-size:11px;
+    }
+
+    .recipe-body,
+    .card-pad{
+        padding:14px;
+    }
+
+    .cost-result{
+        gap:7px;
+    }
+
+    .result-number{
+        font-size:17px;
+    }
+
+    .filter-row{
+        grid-template-columns:1fr;
+    }
+}
+
+/* =========================
+   PRINT
+========================= */
+
+@media print{
+
+    body{
+        background:#fff;
+    }
+
+    .top-controls,
+    .tabs,
+    .hero-bottom,
+    .btn,
+    .icon-btn,
+    .recipe-actions,
+    .modal-backdrop,
+    .footer,
+    .inventory-actions,
+    .add-recipe-area{
+        display:none !important;
+    }
+
+    .section{
+        display:block !important;
+        padding:10px 0;
+    }
+
+    .hero-image{
+        max-height:260px;
+        object-fit:cover;
+    }
+
+    .card{
+        box-shadow:none;
+        break-inside:avoid;
+    }
+
+    .recipe-card{
+        break-inside:avoid;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     HERO
+========================= -->
+
+<header class="hero">
+
+    <!-- صورة الهيدر التي أرسلتها -->
+    <img
+        class="hero-image"
+        src="https://i.postimg.cc/KYJYKf5w/file-00000000e858820aae6b4a167b625fd2.png"
+        alt="WITHFAST Header"
+    >
+
+    <div class="hero-overlay"></div>
+
+    <!-- اللوجو الذي أرسلته -->
+    <img
+        class="hero-logo"
+        src="https://i.postimg.cc/8sQk801F/1789925257649.png"
+        alt="WITHFAST Logo"
+    >
+
+    <div class="top-controls">
+
+        <div class="control-group">
+
+            <button class="circle-btn" id="inventoryTopBtn" title="إدارة المخزون">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 7h16v13H4z"/>
+                    <path d="M8 7V4h8v3"/>
+                    <path d="M8 11h8"/>
+                </svg>
+            </button>
+
+        </div>
+
+        <div class="control-group">
+
+            <button class="circle-btn" id="searchTopBtn" title="بحث">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="10.8" cy="10.8" r="6.8"/>
+                    <path d="m16 16 5 5"/>
+                </svg>
+            </button>
+
+            <button class="circle-btn" id="settingsTopBtn" title="الإعدادات">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/>
+                    <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-2.54v-.1a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.8-1.8.06-.06A1.7 1.7 0 0 0 8.12 15a1.7 1.7 0 0 0-1.56-1.03h-.1v-2.54h.1A1.7 1.7 0 0 0 8.12 10a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.8-1.8.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.03-1.56V5h2.54v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.8 1.8-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.56 1.03h.1v2.54h-.1A1.7 1.7 0 0 0 19.4 15Z"/>
+                </svg>
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="hero-bottom">
+        <div class="brand-strip">
+            <div class="marquee">
+                <span>WITHFAST</span>
+                <span>إدارة التسعير والمخزون</span>
+                <span>حساب التكلفة والربح</span>
+                <span>إدارة خاماتك بشكل أدق</span>
+                <span>WITHFAST</span>
+            </div>
+        </div>
+    </div>
+
+</header>
+
+
+<main class="main-wrap">
+
+    <!-- =========================
+         TABS
+    ========================= -->
+
+    <nav class="tabs">
+
+        <button class="tab active" data-tab="pricing">
+            <svg viewBox="0 0 24 24">
+                <path d="M4 6h16"/>
+                <path d="M4 12h16"/>
+                <path d="M4 18h16"/>
+                <path d="M8 4v4"/>
+                <path d="M16 10v4"/>
+                <path d="M10 16v4"/>
+            </svg>
+            التسعير
+        </button>
+
+        <button class="tab" data-tab="inventory">
+            <svg viewBox="0 0 24 24">
+                <path d="M4 7h16v13H4z"/>
+                <path d="M8 7V4h8v3"/>
+                <path d="M8 12h8"/>
+                <path d="M8 16h5"/>
+            </svg>
+            المخزون
+        </button>
+
+        <button class="tab" data-tab="ingredients">
+            <svg viewBox="0 0 24 24">
+                <path d="M5 5h14v14H5z"/>
+                <path d="M8 9h8"/>
+                <path d="M8 13h5"/>
+                <path d="M8 17h7"/>
+            </svg>
+            الخامات والأسعار
+        </button>
+
+        <button class="tab" data-tab="settings">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/>
+                <path d="M19 12a7 7 0 0 0-.2-1.7l1.5-1.2-1.8-1.8-1.2 1.5A7 7 0 0 0 15.6 8l-.2-2h-2.8l-.2 2a7 7 0 0 0-1.7.8L9.5 7.3 7.7 9.1l1.5 1.2A7 7 0 0 0 8.9 12l-2 .2V15l2 .2a7 7 0 0 0 .8 1.7l-1.5 1.2L10 19.9l1.2-1.5a7 7 0 0 0 1.7.8l.2 2h2.8l.2-2a7 7 0 0 0 1.7-.8l1.2 1.5 1.8-1.8-1.5-1.2A7 7 0 0 0 19.1 15l2-.2v-2.8Z"/>
+            </svg>
+            الإعدادات
+        </button>
+
+    </nav>
+
+
+    <!-- =========================
+         PRICING SECTION
+    ========================= -->
+
+    <section class="section active" id="section-pricing">
+
+        <div class="section-title">
+            <div class="title-side">
+                <div class="title-mark"></div>
+                <div>
+                    <h1>إدارة التسعير</h1>
+                    <p>أدخل سعر البيع ثم اضغط احسب التكلفة للحصول على الحساب النهائي.</p>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="addRecipeBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 5v14"/>
+                    <path d="M5 12h14"/>
+                </svg>
+                إضافة ساندوتش
+            </button>
+        </div>
+
+        <div class="grid grid-4 dashboard" id="dashboardMetrics"></div>
+
+        <div class="recipe-list" id="recipeList"></div>
+
+        <div class="comparison card card-pad" id="comparisonBox"></div>
+
+    </section>
+
+
+    <!-- =========================
+         INVENTORY
+    ========================= -->
+
+    <section class="section" id="section-inventory">
+
+        <div class="section-title">
+            <div class="title-side">
+                <div class="title-mark"></div>
+                <div>
+                    <h1>إدارة المخزون</h1>
+                    <p>تابع الكميات، التوريد، الإنتاج والبيع.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-4 dashboard" id="inventoryMetrics"></div>
+
+        <div class="inventory-actions">
+
+            <button class="btn btn-primary" id="purchaseBtn">
+                توريد / شراء
+            </button>
+
+            <button class="btn btn-secondary" id="productionBtn">
+                تشغيل / إنتاج
+            </button>
+
+            <button class="btn btn-secondary" id="saleBtn">
+                تسجيل بيع
+            </button>
+
+            <button class="btn btn-secondary" id="ingredientFromInventoryBtn">
+                إضافة خامة
+            </button>
+
+        </div>
+
+        <div class="card card-pad">
+
+            <div class="table-scroll">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>الخامة</th>
+                            <th>الكمية الحالية</th>
+                            <th>الوحدة</th>
+                            <th>سعر الوحدة</th>
+                            <th>قيمة المخزون</th>
+                            <th>الحد الأدنى</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="capacity">
+            <div class="section-title">
+                <div class="title-side">
+                    <div class="title-mark"></div>
+                    <div>
+                        <h1 style="font-size:20px">قدرة الإنتاج الحالية</h1>
+                        <p>كم ساندوتش يمكنك إنتاجه بناءً على الخامات الموجودة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="capacity-grid" id="capacityGrid"></div>
+        </div>
+
+        <div class="card card-pad" style="margin-top:18px">
+
+            <div class="section-title">
+                <div>
+                    <h1 style="font-size:20px">سجل الحركة</h1>
+                    <p>التوريد والإنتاج والبيع.</p>
+                </div>
+            </div>
+
+            <div class="filter-row">
+
+                <div class="field">
+                    <label>نوع الحركة</label>
+                    <select class="input" id="logTypeFilter">
+                        <option value="all">الكل</option>
+                        <option value="purchase">توريد</option>
+                        <option value="production">إنتاج</option>
+                        <option value="sale">بيع</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>من تاريخ</label>
+                    <input class="input" type="date" id="logFromDate">
+                </div>
+
+                <div class="field">
+                    <label>إلى تاريخ</label>
+                    <input class="input" type="date" id="logToDate">
+                </div>
+
+                <div class="field">
+                    <label>بحث</label>
+                    <input class="input" id="logSearch" placeholder="ابحث في السجل">
+                </div>
+
+            </div>
+
+            <div class="table-scroll">
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>النوع</th>
+                            <th>التفاصيل</th>
+                            <th>الكمية</th>
+                            <th>القيمة</th>
+                            <th>الربح</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         INGREDIENTS
+    ========================= -->
+
+    <section class="section" id="section-ingredients">
+
+        <div class="section-title">
+            <div class="title-side">
+                <div class="title-mark"></div>
+                <div>
+                    <h1>الخامات والأسعار</h1>
+                    <p>إضافة وتعديل وحذف الخامات وأسعارها.</p>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="addIngredientBtn">
+                إضافة خامة
+            </button>
+        </div>
+
+        <div class="card card-pad">
+
+            <div class="table-scroll">
+
+                <table class="inventory-table">
+
+                    <thead>
+                        <tr>
+                            <th>الخامة</th>
+                            <th>الوحدة</th>
+                            <th>السعر</th>
+                            <th>الحد الأدنى</th>
+                            <th>الكمية</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="ingredientsBody"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         SETTINGS
+    ========================= -->
+
+    <section class="section" id="section-settings">
+
+        <div class="section-title">
+            <div class="title-side">
+                <div class="title-mark"></div>
+                <div>
+                    <h1>الإعدادات والنسخ الاحتياطي</h1>
+                    <p>إعدادات التشغيل وحفظ البيانات.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-grid">
+
+            <div class="card settings-card">
+
+                <h2>تكلفة التشغيل</h2>
+                <p>تستخدم هذه القيم لحساب الزيت والغاز تلقائيًا.</p>
+
+                <div class="setting-fields">
+
+                    <div class="field">
+                        <label>استهلاك الزيت لكل كيلو عمل</label>
+                        <input class="input" type="number" step="0.01" min="0" id="oilPerKg">
+                    </div>
+
+                    <div class="field">
+                        <label>عدد كيلو التشغيل لكل أنبوبة</label>
+                        <input class="input" type="number" step="0.1" min="0.01" id="kgPerGas">
+                    </div>
+
+                    <div class="field">
+                        <label>سعر لتر الزيت</label>
+                        <input class="input" type="number" step="0.01" min="0" id="oilPriceSetting">
+                    </div>
+
+                    <div class="field">
+                        <label>سعر أنبوبة الغاز</label>
+                        <input class="input" type="number" step="0.01" min="0" id="gasPriceSetting">
+                    </div>
+
+                </div>
+
+                <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:14px">
+                    حفظ إعدادات التشغيل
+                </button>
+
+            </div>
+
+
+            <div class="card settings-card">
+
+                <h2>النسخ الاحتياطي</h2>
+                <p>احفظ نسخة من كل الأسعار والمخزون والوصفات والسجلات.</p>
+
+                <div class="actions">
+
+                    <button class="btn btn-primary" id="exportJsonBtn">
+                        تصدير نسخة JSON
+                    </button>
+
+                    <button class="btn btn-secondary" id="importJsonBtn">
+                        استيراد نسخة
+                    </button>
+
+                    <input
+                        type="file"
+                        id="importJsonFile"
+                        accept=".json,application/json"
+                        style="display:none"
+                    >
+
+                    <button class="btn btn-secondary" id="exportCsvBtn">
+                        تصدير CSV
+                    </button>
+
+                    <button class="btn btn-secondary" id="printBtn">
+                        طباعة / PDF
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="card settings-card">
+
+                <h2>إعادة ضبط البرنامج</h2>
+                <p>
+                    يرجع البرنامج للبيانات الافتراضية ويحذف البيانات الحالية من هذا الجهاز.
+                </p>
+
+                <button class="btn btn-danger" id="resetBtn">
+                    إعادة البيانات الافتراضية
+                </button>
+
+            </div>
+
+
+            <div class="card settings-card">
+
+                <h2>طريقة حساب الربح</h2>
+                <p>
+                    هامش الربح هنا = الربح ÷ سعر البيع × 100.
+                </p>
+
+                <div class="modal-note">
+                    مثال: إذا كانت التكلفة 70 وسعر البيع 100،
+                    فالربح 30، وهامش الربح 30%.
+                    سعر البيع المستهدف يُحسب بناءً على هامش الربح المطلوب.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<div class="footer">
+    WITHFAST -- Pricing & Inventory Management
+</div>
+
+
+<!-- =========================
+     MODALS
+========================= -->
+
+<div class="modal-backdrop" id="modalBackdrop">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <h2 id="modalTitle">نافذة</h2>
+
+            <button class="modal-close" id="modalClose">
+                ×
+            </button>
+        </div>
+
+        <div class="modal-body" id="modalBody"></div>
+
+        <div class="modal-footer" id="modalFooter"></div>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   WITHFAST APP
+========================================================= */
+
+const STORAGE_KEY = "WITHFAST_DATA_V4";
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ = (selector, parent=document) => parent.querySelector(selector);
+const $$ = (selector, parent=document) => [...parent.querySelectorAll(selector)];
+
+function uid(prefix="id"){
+    return prefix + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+}
+
+function num(value){
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function money(value){
+    return `${num(value).toLocaleString("en-US",{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    })} ج.م`;
+}
+
+function number(value, digits=2){
+    return num(value).toLocaleString("en-US",{
+        minimumFractionDigits:0,
+        maximumFractionDigits:digits
+    });
+}
+
+function dateISO(date=new Date()){
+    const d = new Date(date);
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+}
+
+function dateTime(){
+    return new Date().toISOString();
+}
+
+function escapeHtml(value){
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+function roundHalf(value){
+    return Math.round(num(value)*2)/2;
+}
+
+function toast(message){
+    const el = $("#toast");
+    el.textContent = message;
+    el.classList.add("show");
+
+    clearTimeout(window.__toastTimer);
+
+    window.__toastTimer = setTimeout(()=>{
+        el.classList.remove("show");
+    },2500);
+}
+
+
+/* =========================================================
+   DEFAULT DATA
+========================================================= */
+
+const DEFAULT_DATA = {
+
+    version:4,
+
+    settings:{
+        oilPerKg:0.15,
+        kgPerGas:60,
+        oilPrice:80,
+        gasPrice:550
+    },
+
+    ingredients:[
+
+        {
+            id:"liver",
+            name:"كبدة",
+            unit:"كيلو",
+            price:180,
+            qty:0,
+            min:2
+        },
+
+        {
+            id:"sausage",
+            name:"سجق",
+            unit:"كيلو",
+            price:180,
+            qty:0,
+            min:2
+        },
+
+        {
+            id:"kofta",
+            name:"كفتة (لحمة)",
+            unit:"كيلو",
+            price:280,
+            qty:0,
+            min:2
+        },
+
+        {
+            id:"fat",
+            name:"دهن لحمة",
+            unit:"كيلو",
+            price:259,
+            qty:0,
+            min:1
+        },
+
+        {
+            id:"fajita",
+            name:"فاهيتا",
+            unit:"كيلو",
+            price:170,
+            qty:0,
+            min:2
+        },
+
+        {
+            id:"chili",
+            name:"شطة",
+            unit:"كيلو",
+            price:0,
+            qty:0,
+            min:0.5
+        },
+
+        {
+            id:"normalSpices",
+            name:"مجموعة توابل عادية",
+            unit:"كيلو",
+            price:5,
+            qty:0,
+            min:0.5
+        },
+
+        {
+            id:"koftaSpices",
+            name:"توابل الكفتة",
+            unit:"كيلو",
+            price:7,
+            qty:0,
+            min:0.5
+        },
+
+        {
+            id:"sausageVeg",
+            name:"خضار للسجق -- فلفل وبصل وطماطم",
+            unit:"كيلو",
+            price:25,
+            qty:0,
+            min:1
+        },
+
+        {
+            id:"fajitaVeg",
+            name:"فلفل وبصل للفاهيتا",
+            unit:"كيلو",
+            price:25,
+            qty:0,
+            min:1
+        },
+
+        {
+            id:"bread",
+            name:"رغيف فينو",
+            unit:"رغيف",
+            price:1.5,
+            qty:0,
+            min:50
+        },
+
+        {
+            id:"packaging",
+            name:"تغليف",
+            unit:"قطعة",
+            price:1,
+            qty:0,
+            min:50
+        },
+
+        {
+            id:"tahini",
+            name:"طحينة",
+            unit:"ساندوتش",
+            price:3,
+            qty:0,
+            min:50
+        },
+
+        {
+            id:"gas",
+            name:"أنبوبة غاز",
+            unit:"أنبوبة",
+            price:550,
+            qty:0,
+            min:0.25
+        },
+
+        {
+            id:"oil",
+            name:"زيت",
+            unit:"لتر",
+            price:80,
+            qty:0,
+            min:2
+        }
+    ],
+
+    recipes:[
+
+        {
+            id:"liverSandwich",
+            name:"ساندوتش الكبدة",
+            yield:13,
+            salePrice:0,
+            targetMargin:30,
+
+            items:[
+                {ingredientId:"liver",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"chili",qtyPerKg:0.5,perSandwich:0},
+                {ingredientId:"normalSpices",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"bread",qtyPerKg:0,perSandwich:1},
+                {ingredientId:"packaging",qtyPerKg:0,perSandwich:1}
+            ]
+        },
+
+        {
+            id:"sausageSandwich",
+            name:"ساندوتش السجق",
+            yield:17,
+            salePrice:0,
+            targetMargin:30,
+
+            items:[
+                {ingredientId:"sausage",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"chili",qtyPerKg:0.5,perSandwich:0},
+                {ingredientId:"normalSpices",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"sausageVeg",qtyPerKg:0.5,perSandwich:0},
+                {ingredientId:"bread",qtyPerKg:0,perSandwich:1},
+                {ingredientId:"packaging",qtyPerKg:0,perSandwich:1}
+            ]
+        },
+
+        {
+            id:"koftaSandwich",
+            name:"ساندوتش الكفتة",
+            yield:16,
+            salePrice:0,
+            targetMargin:30,
+
+            items:[
+                {ingredientId:"kofta",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"fat",qtyPerKg:0.25,perSandwich:0},
+                {ingredientId:"koftaSpices",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"bread",qtyPerKg:0,perSandwich:1},
+                {ingredientId:"packaging",qtyPerKg:0,perSandwich:1},
+                {ingredientId:"tahini",qtyPerKg:0,perSandwich:1}
+            ]
+        },
+
+        {
+            id:"fajitaSandwich",
+            name:"ساندوتش الفاهيتا",
+            yield:16,
+            salePrice:0,
+            targetMargin:30,
+
+            items:[
+                {ingredientId:"fajita",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"fajitaVeg",qtyPerKg:0.5,perSandwich:0},
+                {ingredientId:"normalSpices",qtyPerKg:1,perSandwich:0},
+                {ingredientId:"bread",qtyPerKg:0,perSandwich:1},
+                {ingredientId:"packaging",qtyPerKg:0,perSandwich:1}
+            ]
+        }
+
+    ],
+
+    finishedStock:{},
+
+    logs:[]
+};
+
+
+/* =========================================================
+   LOAD / SAVE
+========================================================= */
+
+function deepClone(obj){
+    return JSON.parse(JSON.stringify(obj));
+}
+
+function normalizeData(data){
+
+    const base = deepClone(DEFAULT_DATA);
+
+    if(!data || typeof data !== "object"){
+        return base;
+    }
+
+    if(data.settings){
+        base.settings = {
+            ...base.settings,
+            ...data.settings
+        };
+    }
+
+    if(Array.isArray(data.ingredients)){
+        base.ingredients = data.ingredients.map(i=>({
+            id:i.id || uid("ing"),
+            name:i.name || "خامة",
+            unit:i.unit || "كيلو",
+            price:num(i.price),
+            qty:num(i.qty),
+            min:num(i.min)
+        }));
+    }
+
+    if(Array.isArray(data.recipes)){
+        base.recipes = data.recipes.map(r=>({
+            id:r.id || uid("recipe"),
+            name:r.name || "ساندوتش",
+            yield:Math.max(1,num(r.yield)),
+            salePrice:num(r.salePrice),
+            targetMargin:num(r.targetMargin ?? 30),
+            items:Array.isArray(r.items)
+                ? r.items.map(x=>({
+                    ingredientId:x.ingredientId,
+                    qtyPerKg:num(x.qtyPerKg),
+                    perSandwich:num(x.perSandwich)
+                }))
+                : []
+        }));
+    }
+
+    base.finishedStock = {
+        ...(data.finishedStock || {})
+    };
+
+    base.logs = Array.isArray(data.logs)
+        ? data.logs
+        : [];
+
+    return base;
+}
+
+let data;
+
+try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(saved){
+        data = normalizeData(JSON.parse(saved));
+    }else{
+        data = deepClone(DEFAULT_DATA);
+    }
+
+}catch(error){
+    data = deepClone(DEFAULT_DATA);
+}
+
+function saveData(){
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+    );
+}
+
+
+/* =========================================================
+   INGREDIENT HELPERS
+========================================================= */
+
+function ingredient(id){
+    return data.ingredients.find(x=>x.id===id);
+}
+
+function recipe(id){
+    return data.recipes.find(x=>x.id===id);
+}
+
+function ingredientName(id){
+    return ingredient(id)?.name || "خامة غير موجودة";
+}
+
+function ingredientPrice(id){
+    return num(ingredient(id)?.price);
+}
+
+function syncOperatingPrices(){
+
+    const oil = ingredient("oil");
+    const gas = ingredient("gas");
+
+    if(oil){
+        oil.price = num(data.settings.oilPrice);
+    }
+
+    if(gas){
+        gas.price = num(data.settings.gasPrice);
+    }
+}
+
+
+/* =========================================================
+   RECIPE CALCULATIONS
+========================================================= */
+
+function operatingCostPerKg(){
+
+    const oilCost =
+        num(data.settings.oilPerKg) *
+        num(data.settings.oilPrice);
+
+    const gasCost =
+        num(data.settings.gasPrice) /
+        Math.max(0.01,num(data.settings.kgPerGas));
+
+    return {
+        oil:oilCost,
+        gas:gasCost,
+        total:oilCost+gasCost
+    };
+}
+
+function calculateRecipe(r){
+
+    const y = Math.max(1,num(r.yield));
+
+    let ingredientPerKgCost = 0;
+    let ingredientPerSandwichCost = 0;
+
+    const breakdown = [];
+
+    for(const item of r.items){
+
+        const ing = ingredient(item.ingredientId);
+
+        if(!ing){
+            continue;
+        }
+
+        const price = num(ing.price);
+        const kgCost = num(item.qtyPerKg) * price;
+        const sandwichCost = num(item.perSandwich) * price;
+
+        ingredientPerKgCost += kgCost;
+        ingredientPerSandwichCost += sandwichCost;
+
+        if(item.qtyPerKg > 0){
+
+            breakdown.push({
+                id:ing.id,
+                name:ing.name,
+                amount:`${number(item.qtyPerKg,3)} ${ing.unit}`,
+                costPerSandwich:kgCost / y
+            });
+        }
+
+        if(item.perSandwich > 0){
+
+            breakdown.push({
+                id:ing.id,
+                name:ing.name,
+                amount:`${number(item.perSandwich,3)} / ساندوتش`,
+                costPerSandwich:sandwichCost
+            });
+        }
+    }
+
+    const operating = operatingCostPerKg();
+
+    const totalPerKg =
+        ingredientPerKgCost +
+        ingredientPerSandwichCost * y +
+        operating.total;
+
+    const costPerSandwich =
+        totalPerKg / y;
+
+    breakdown.push({
+        id:"oil",
+        name:"زيت",
+        amount:`${number(data.settings.oilPerKg,3)} لتر / كيلو`,
+        costPerSandwich:operating.oil / y
+    });
+
+    breakdown.push({
+        id:"gas",
+        name:"غاز",
+        amount:`1 أنبوبة لكل ${number(data.settings.kgPerGas,1)} كيلو`,
+        costPerSandwich:operating.gas / y
+    });
+
+    const selling = num(r.salePrice);
+
+    const profit =
+        selling > 0
+        ? selling - costPerSandwich
+        : 0;
+
+    const margin =
+        selling > 0
+        ? (profit / selling) * 100
+        : 0;
+
+    let suggested = 0;
+
+    if(num(r.targetMargin) >= 0 && num(r.targetMargin) < 100){
+
+        suggested =
+            costPerSandwich /
+            (1 - num(r.targetMargin)/100);
+
+        suggested = roundHalf(suggested);
+    }
+
+    const missingPrices = r.items
+        .filter(x=>num(x.qtyPerKg)>0 || num(x.perSandwich)>0)
+        .filter(x=>num(ingredientPrice(x.ingredientId))<=0)
+        .map(x=>ingredientName(x.ingredientId));
+
+    return {
+        yield:y,
+        ingredientPerKgCost,
+        ingredientPerSandwichCost,
+        operating,
+        totalPerKg,
+        costPerSandwich,
+        selling,
+        profit,
+        margin,
+        suggested,
+        breakdown,
+        missingPrices
+    };
+}
+
+
+/* =========================================================
+   CAPACITY
+========================================================= */
+
+function recipeCapacity(r){
+
+    const y = Math.max(1,num(r.yield));
+
+    let limit = Infinity;
+    let limiting = "لا يوجد";
+
+    const check = (name, availableSandwiches) => {
+
+        if(!Number.isFinite(availableSandwiches)){
+            return;
+        }
+
+        if(availableSandwiches < limit){
+            limit = availableSandwiches;
+            limiting = name;
+        }
+    };
+
+    for(const item of r.items){
+
+        const ing = ingredient(item.ingredientId);
+
+        if(!ing){
+            continue;
+        }
+
+        if(num(item.qtyPerKg) > 0){
+
+            const possibleKg =
+                num(ing.qty) /
+                num(item.qtyPerKg);
+
+            check(
+                ing.name,
+                possibleKg * y
+            );
+        }
+
+        if(num(item.perSandwich) > 0){
+
+            check(
+                ing.name,
+                num(ing.qty) /
+                num(item.perSandwich)
+            );
+        }
+    }
+
+    const oil = ingredient("oil");
+
+    if(oil && num(data.settings.oilPerKg)>0){
+
+        check(
+            "زيت",
+            (num(oil.qty)/num(data.settings.oilPerKg))*y
+        );
+    }
+
+    const gas = ingredient("gas");
+
+    if(gas && num(data.settings.kgPerGas)>0){
+
+        check(
+            "غاز",
+            (num(gas.qty)*num(data.settings.kgPerGas))*y
+        );
+    }
+
+    if(limit === Infinity){
+        return {
+            sandwiches:0,
+            limiting:"لا توجد خامات مرتبطة بالوصفة"
+        };
+    }
+
+    return {
+        sandwiches:Math.max(0,Math.floor(limit)),
+        limiting
+    };
+}
+
+
+/* =========================================================
+   TAB SYSTEM
+========================================================= */
+
+function openTab(name){
+
+    $$(".tab").forEach(tab=>{
+        tab.classList.toggle(
+            "active",
+            tab.dataset.tab === name
+        );
+    });
+
+    $$(".section").forEach(section=>{
+        section.classList.toggle(
+            "active",
+            section.id === `section-${name}`
+        );
+    });
+
+    window.scrollTo({
+        top:document.querySelector(".tabs").offsetTop - 10,
+        behavior:"smooth"
+    });
+
+    if(name==="pricing"){
+        renderPricing();
+    }
+
+    if(name==="inventory"){
+        renderInventory();
+        renderLogs();
+    }
+
+    if(name==="ingredients"){
+        renderIngredients();
+    }
+
+    if(name==="settings"){
+        renderSettings();
+    }
+}
+
+$$(".tab").forEach(tab=>{
+    tab.addEventListener("click",()=>{
+        openTab(tab.dataset.tab);
+    });
+});
+
+$("#inventoryTopBtn").addEventListener("click",()=>{
+    openTab("inventory");
+});
+
+$("#settingsTopBtn").addEventListener("click",()=>{
+    openTab("settings");
+});
+
+$("#searchTopBtn").addEventListener("click",()=>{
+    openSearchModal();
+});
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function todayLogs(){
+
+    const today = dateISO();
+
+    return data.logs.filter(
+        x=>String(x.date || "").slice(0,10) === today
+    );
+}
+
+function getWeekStart(){
+
+    const d = new Date();
+    const day = d.getDay();
+
+    const diff = day === 0 ? 6 : day-1;
+
+    d.setDate(d.getDate()-diff);
+
+    return dateISO(d);
+}
+
+function currentMonth(){
+
+    const d = new Date();
+
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+}
+
+function salesSummary(){
+
+    const logs = data.logs.filter(x=>x.type==="sale");
+
+    const today = dateISO();
+    const week = getWeekStart();
+    const month = currentMonth();
+
+    let todaySales = 0;
+    let todayProfit = 0;
+
+    let weekSales = 0;
+    let weekProfit = 0;
+
+    let monthSales = 0;
+    let monthProfit = 0;
+
+    for(const log of logs){
+
+        const d = String(log.date || "").slice(0,10);
+
+        if(d===today){
+            todaySales += num(log.revenue);
+            todayProfit += num(log.profit);
+        }
+
+        if(d>=week){
+            weekSales += num(log.revenue);
+            weekProfit += num(log.profit);
+        }
+
+        if(d.startsWith(month)){
+            monthSales += num(log.revenue);
+            monthProfit += num(log.profit);
+        }
+    }
+
+    return {
+        todaySales,
+        todayProfit,
+        weekSales,
+        weekProfit,
+        monthSales,
+        monthProfit
+    };
+}
+
+function inventoryValue(){
+
+    return data.ingredients.reduce(
+        (sum,i)=>sum + num(i.qty)*num(i.price),
+        0
+    );
+}
+
+function lowStockCount(){
+
+    return data.ingredients.filter(
+        i=>num(i.qty) < num(i.min)
+    ).length;
+}
+
+function renderDashboard(){
+
+    const s = salesSummary();
+
+    $("#dashboardMetrics").innerHTML = `
+
+        <div class="card metric">
+            <div class="metric-label">قيمة المخزون</div>
+            <div class="metric-value">${money(inventoryValue())}</div>
+            <div class="metric-sub">القيمة الحالية للخامات</div>
+        </div>
+
+        <div class="card metric">
+            <div class="metric-label">خامات منخفضة</div>
+            <div class="metric-value">${number(lowStockCount())}</div>
+            <div class="metric-sub">أقل من الحد الأدنى</div>
+        </div>
+
+        <div class="card metric">
+            <div class="metric-label">مبيعات اليوم</div>
+            <div class="metric-value">${money(s.todaySales)}</div>
+            <div class="metric-sub">ربح اليوم: ${money(s.todayProfit)}</div>
+        </div>
+
+        <div class="card metric">
+            <div class="metric-label">مبيعات الشهر</div>
+            <div class="metric-value">${money(s.monthSales)}</div>
+            <div class="metric-sub">ربح الشهر: ${money(s.monthProfit)}</div>
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   PRICING RENDER
+========================================================= */
+
+function renderPricing(){
+
+    renderDashboard();
+
+    const list = $("#recipeList");
+
+    if(!data.recipes.length){
+
+        list.innerHTML = `
+            <div class="card empty">
+                <div class="empty-shape"></div>
+                <h3>لا توجد ساندوتشات</h3>
+                <p>أضف أول ساندوتش لبدء حساب التكلفة.</p>
+            </div>
+        `;
+
+        renderComparison();
+
+        return;
+    }
+
+    list.innerHTML = data.recipes.map(renderRecipeCard).join("");
+
+    bindPricingEvents();
+
+    renderComparison();
+}
+
+function renderRecipeCard(r){
+
+    const calc = calculateRecipe(r);
+
+    const finished =
+        num(data.finishedStock[r.id]);
+
+    const missing =
+        calc.missingPrices.length
+        ? `
+            <div class="modal-note">
+                يوجد خامة بدون سعر:
+                <strong>${escapeHtml(calc.missingPrices.join("، "))}</strong>
+                -- أدخل سعرها من قسم الخامات والأسعار.
+            </div>
+        `
+        : "";
+
+    return `
+
+        <article class="card recipe-card" data-recipe-card="${r.id}">
+
+            <div class="recipe-header">
+
+                <div class="recipe-title">
+
+                    <div class="geometry-icon">
+                        <div class="geometry-icon-inner"></div>
+                    </div>
+
+                    <div class="recipe-title-text">
+                        <h2>${escapeHtml(r.name)}</h2>
+                        <span>
+                            مخزون جاهز للبيع:
+                            ${number(finished)}
+                            ساندوتش
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="recipe-actions">
+
+                    <button
+                        class="icon-btn"
+                        data-edit-recipe="${r.id}"
+                        title="تعديل الساندوتش"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <path d="m4 20 4.5-1 10-10a2 2 0 0 0-3-3l-10 10Z"/>
+                            <path d="m14.5 6.5 3 3"/>
+                        </svg>
+                    </button>
+
+                    <button
+                        class="icon-btn"
+                        data-delete-recipe="${r.id}"
+                        title="حذف"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <path d="M5 7h14"/>
+                            <path d="M10 11v6"/>
+                            <path d="M14 11v6"/>
+                            <path d="m8 7 1-3h6l1 3"/>
+                            <path d="M7 7l1 14h8l1-14"/>
+                        </svg>
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="recipe-body">
+
+                ${missing}
+
+                <!-- أهم جزء: سعر البيع والحساب -->
+
+                <div class="price-input-area">
+
+                    <div class="price-input-title">
+                        بيانات البيع والحساب
+                    </div>
+
+                    <div class="price-fields">
+
+                        <div class="field">
+
+                            <label>
+                                عدد الساندوتشات من الكيلو
+                            </label>
+
+                            <input
+                                class="input recipe-input"
+                                type="number"
+                                min="1"
+                                step="1"
+                                data-recipe-id="${r.id}"
+                                data-field="yield"
+                                value="${num(r.yield)}"
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                سعر البيع الفعلي للساندوتش
+                            </label>
+
+                            <input
+                                class="input recipe-input sale-price-input"
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                inputmode="decimal"
+                                data-recipe-id="${r.id}"
+                                data-field="salePrice"
+                                value="${r.salePrice > 0 ? r.salePrice : ""}"
+                                placeholder="مثال: 50"
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                هامش الربح المستهدف %
+                            </label>
+
+                            <input
+                                class="input recipe-input"
+                                type="number"
+                                min="0"
+                                max="99.99"
+                                step="0.1"
+                                data-recipe-id="${r.id}"
+                                data-field="targetMargin"
+                                value="${num(r.targetMargin)}"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="calculate-row">
+
+                        <button
+                            class="btn btn-primary calculate-btn"
+                            data-calculate="${r.id}"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6 3h12v18H6z"/>
+                                <path d="M9 7h6"/>
+                                <path d="M9 11h2"/>
+                                <path d="M13 11h2"/>
+                                <path d="M9 15h2"/>
+                                <path d="M13 15h2"/>
+                                <path d="M9 18h6"/>
+                            </svg>
+                            احسب التكلفة
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- النتائج -->
+
+                <div class="cost-result">
+
+                    <div class="result-box highlight">
+                        <div class="result-label">تكلفة الكيلو</div>
+                        <div class="result-number">
+                            ${money(calc.totalPerKg)}
+                        </div>
+                    </div>
+
+                    <div class="result-box highlight">
+                        <div class="result-label">تكلفة الساندوتش</div>
+                        <div class="result-number">
+                            ${money(calc.costPerSandwich)}
+                        </div>
+                    </div>
+
+                    <div class="result-box">
+                        <div class="result-label">سعر البيع</div>
+                        <div class="result-number">
+                            ${calc.selling > 0 ? money(calc.selling) : "--"}
+                        </div>
+                    </div>
+
+                    <div class="result-box">
+                        <div class="result-label">السعر المقترح</div>
+                        <div class="result-number">
+                            ${calc.suggested > 0 ? money(calc.suggested) : "--"}
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- تفاصيل الساندوتش -->
+
+                <div class="recipe-details-title">
+
+                    <span>تفاصيل الساندوتش</span>
+
+                    <button
+                        class="btn btn-secondary"
+                        data-add-item="${r.id}"
+                        style="min-height:34px;padding:0 10px;font-size:11px"
+                    >
+                        + إضافة مكون
+                    </button>
+
+                </div>
+
+
+                <div class="table-scroll">
+
+                    <table class="recipe-table">
+
+                        <thead>
+                            <tr>
+                                <th>الخامة</th>
+                                <th>الكمية لكل كيلو</th>
+                                <th>الكمية لكل ساندوتش</th>
+                                <th>التكلفة/ساندوتش</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            ${
+                                r.items.map((item,index)=>{
+
+                                    const ing =
+                                        ingredient(item.ingredientId);
+
+                                    if(!ing){
+                                        return "";
+                                    }
+
+                                    const c =
+                                        (
+                                            num(item.qtyPerKg) * num(ing.price)
+                                        ) / calc.yield
+                                        +
+                                        (
+                                            num(item.perSandwich) *
+                                            num(ing.price)
+                                        );
+
+                                    return `
+
+                                        <tr>
+
+                                            <td>
+                                                <strong>
+                                                    ${escapeHtml(ing.name)}
+                                                </strong>
+                                            </td>
+
+                                            <td>
+
+                                                <input
+                                                    class="small-input recipe-item-input"
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.001"
+                                                    data-recipe-id="${r.id}"
+                                                    data-item-index="${index}"
+                                                    data-item-field="qtyPerKg"
+                                                    value="${num(item.qtyPerKg)}"
+                                                >
+
+                                            </td>
+
+                                            <td>
+
+                                                <input
+                                                    class="small-input recipe-item-input"
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.001"
+                                                    data-recipe-id="${r.id}"
+                                                    data-item-index="${index}"
+                                                    data-item-field="perSandwich"
+                                                    value="${num(item.perSandwich)}"
+                                                >
+
+                                            </td>
+
+                                            <td>
+                                                ${money(c)}
+                                            </td>
+
+                                            <td>
+
+                                                <button
+                                                    class="remove-row"
+                                                    data-remove-item="${r.id}"
+                                                    data-item-index="${index}"
+                                                    title="حذف المكون"
+                                                >
+                                                    ×
+                                                </button>
+
+                                            </td>
+
+                                        </tr>
+                                    `;
+
+                                }).join("")
+                            }
+
+                            <tr>
+                                <td><strong>زيت</strong></td>
+                                <td>
+                                    ${number(data.settings.oilPerKg,3)} لتر
+                                </td>
+                                <td>--</td>
+                                <td>
+                                    ${money(calc.operating.oil / calc.yield)}
+                                </td>
+                                <td>تشغيل</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>غاز</strong></td>
+                                <td>
+                                    1 / ${number(data.settings.kgPerGas,1)} كيلو
+                                </td>
+                                <td>--</td>
+                                <td>
+                                    ${money(calc.operating.gas / calc.yield)}
+                                </td>
+                                <td>تشغيل</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Breakdown -->
+
+                <div class="breakdown">
+
+                    <div class="recipe-details-title">
+                        <span>تفصيل تكلفة الساندوتش</span>
+                    </div>
+
+                    <div class="breakdown-grid">
+
+                        ${
+                            calc.breakdown.map(b=>`
+
+                                <div class="breakdown-row">
+
+                                    <span>
+                                        ${escapeHtml(b.name)}
+                                        <small style="color:#aaa">
+                                            -- ${escapeHtml(b.amount)}
+                                        </small>
+                                    </span>
+
+                                    <strong>
+                                        ${money(b.costPerSandwich)}
+                                    </strong>
+
+                                </div>
+
+                            `).join("")
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <!-- Profit -->
+
+                <div class="profit-box">
+
+                    <div class="profit-grid">
+
+                        <div class="profit-item">
+                            <span>الربح/ساندوتش</span>
+                            <strong>
+                                ${calc.selling > 0
+                                    ? money(calc.profit)
+                                    : "أدخل سعر البيع"}
+                            </strong>
+                        </div>
+
+                        <div class="profit-item">
+                            <span>هامش الربح</span>
+                            <strong>
+                                ${calc.selling > 0
+                                    ? `${number(calc.margin,2)}%`
+                                    : "--"}
+                            </strong>
+                        </div>
+
+                        <div class="profit-item">
+                            <span>السعر المقترح</span>
+                            <strong>
+                                ${calc.suggested > 0
+                                    ? money(calc.suggested)
+                                    : "--"}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+/* =========================================================
+   PRICING EVENTS
+========================================================= */
+
+function bindPricingEvents(){
+
+    $$(".recipe-input").forEach(input=>{
+
+        input.addEventListener("input",()=>{
+
+            const r = recipe(input.dataset.recipeId);
+
+            if(!r){
+                return;
+            }
+
+            r[input.dataset.field] =
+                num(input.value);
+
+            saveData();
+
+            updateRecipeCard(r.id);
+            renderComparison();
+            renderDashboard();
+
+        });
+    });
+
+
+    $$(".calculate-btn").forEach(btn=>{
+
+        btn.addEventListener("click",()=>{
+
+            const r = recipe(btn.dataset.calculate);
+
+            if(!r){
+                return;
+            }
+
+            if(num(r.yield)<=0){
+                toast("عدد الساندوتشات يجب أن يكون أكبر من صفر.");
+                return;
+            }
+
+            const calc = calculateRecipe(r);
+
+            if(calc.missingPrices.length){
+
+                toast(
+                    "يوجد خامة بدون سعر: " +
+                    calc.missingPrices.join("، ")
+                );
+
+            }else{
+
+                toast(
+                    `تم الحساب -- تكلفة الساندوتش ${money(calc.costPerSandwich)}`
+                );
+            }
+
+            updateRecipeCard(r.id);
+            renderComparison();
+            renderDashboard();
+        });
+    });
+
+
+    $$("[data-edit-recipe]").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            openRecipeModal(btn.dataset.editRecipe);
+        });
+    });
+
+
+    $$("[data-delete-recipe]").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            deleteRecipe(btn.dataset.deleteRecipe);
+        });
+    });
+
+
+    $$("[data-add-item]").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            const r = recipe(btn.dataset.addItem);
+
+            if(!r){
+                return;
+            }
+
+            r.items.push({
+                ingredientId:data.ingredients[0]?.id,
+                qtyPerKg:0,
+                perSandwich:0
+            });
+
+            saveData();
+            renderPricing();
+            toast("تمت إضافة صف مكون جديد.");
+        });
+    });
+
+
+    $$(".recipe-item-input").forEach(input=>{
+
+        input.addEventListener("input",()=>{
+
+            const r =
+                recipe(input.dataset.recipeId);
+
+            if(!r){
+                return;
+            }
+
+            const index =
+                Number(input.dataset.itemIndex);
+
+            const item =
+                r.items[index];
+
+            if(!item){
+                return;
+            }
+
+            item[input.dataset.itemField] =
+                Math.max(0,num(input.value));
+
+            saveData();
+
+            updateRecipeCard(r.id);
+            renderComparison();
+        });
+    });
+
+
+    $$("[data-remove-item]").forEach(btn=>{
+
+        btn.addEventListener("click",()=>{
+
+            const r =
+                recipe(btn.dataset.removeItem);
+
+            const index =
+                Number(btn.dataset.itemIndex);
+
+            if(!r || !r.items[index]){
+                return;
+            }
+
+            r.items.splice(index,1);
+
+            saveData();
+
+            renderPricing();
+
+            toast("تم حذف المكون.");
+        });
+    });
+}
+
+
+function updateRecipeCard(recipeId){
+
+    const old = $(`[data-recipe-card="${recipeId}"]`);
+
+    if(!old){
+        renderPricing();
+        return;
+    }
+
+    /*
+       نحفظ مكان التركيز قبل إعادة بناء الكارت
+       حتى يظل إدخال سعر البيع سلسًا.
+    */
+
+    const active = document.activeElement;
+
+    const focusId =
+        active?.dataset?.recipeId === recipeId
+        ? active
+        : null;
+
+    const cursor =
+        focusId && typeof focusId.selectionStart === "number"
+        ? focusId.selectionStart
+        : null;
+
+    const temp = document.createElement("div");
+
+    temp.innerHTML =
+        renderRecipeCard(recipeId === recipeId
+            ? recipe(recipeId)
+            : null);
+
+    const newCard =
+        temp.firstElementChild;
+
+    old.replaceWith(newCard);
+
+    bindPricingEvents();
+
+    if(focusId){
+
+        const selector =
+            `[data-recipe-id="${recipeId}"][data-field="${focusId.dataset.field}"]`;
+
+        const newInput =
+            document.querySelector(selector);
+
+        if(newInput){
+
+            newInput.focus();
+
+            if(cursor !== null){
+
+                try{
+                    newInput.setSelectionRange(cursor,cursor);
+                }catch(e){}
+            }
+        }
+    }
+}
+
+
+/* =========================================================
+   COMPARISON
+========================================================= */
+
+function renderComparison(){
+
+    const box = $("#comparisonBox");
+
+    if(!data.recipes.length){
+        box.innerHTML = "";
+        return;
+    }
+
+    const rows =
+        data.recipes.map(r=>({
+            r,
+            c:calculateRecipe(r)
+        }));
+
+    const profits =
+        rows.map(x=>x.c.profit);
+
+    const valid =
+        rows.filter(x=>x.c.selling>0);
+
+    let highest = null;
+    let lowest = null;
+
+    if(valid.length){
+
+        highest =
+            Math.max(...valid.map(x=>x.c.profit));
+
+        lowest =
+            Math.min(...valid.map(x=>x.c.profit));
+    }
+
+    box.innerHTML = `
+
+        <div class="section-title">
+
+            <div>
+                <h1 style="font-size:20px">
+                    مقارنة الساندوتشات
+                </h1>
+
+                <p>
+                    التكلفة وسعر البيع والربح لكل صنف.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="table-scroll">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>الساندوتش</th>
+                        <th>تكلفة الساندوتش</th>
+                        <th>سعر البيع</th>
+                        <th>الربح</th>
+                        <th>الهامش</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${
+                        rows.map(({r,c})=>{
+
+                            let cls = "";
+
+                            if(valid.length && c.selling>0){
+
+                                if(
+                                    c.profit === highest &&
+                                    highest !== lowest
+                                ){
+                                    cls = "high-profit";
+                                }
+
+                                if(
+                                    c.profit === lowest &&
+                                    highest !== lowest
+                                ){
+                                    cls = "low-profit";
+                                }
+                            }
+
+                            return `
+
+                                <tr class="${cls}">
+
+                                    <td>
+                                        <strong>
+                                            ${escapeHtml(r.name)}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        ${money(c.costPerSandwich)}
+                                    </td>
+
+                                    <td>
+                                        ${c.selling>0
+                                            ? money(c.selling)
+                                            : "--"}
+                                    </td>
+
+                                    <td>
+                                        ${c.selling>0
+                                            ? money(c.profit)
+                                            : "--"}
+                                    </td>
+
+                                    <td>
+                                        ${c.selling>0
+                                            ? number(c.margin,2)+"%"
+                                            : "--"}
+                                    </td>
+
+                                </tr>
+                            `;
+
+                        }).join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   RECIPE MODAL
+========================================================= */
+
+function openRecipeModal(recipeId=null){
+
+    const existing =
+        recipeId ? recipe(recipeId) : null;
+
+    const r = existing
+        ? deepClone(existing)
+        : {
+            id:uid("recipe"),
+            name:"",
+            yield:10,
+            salePrice:0,
+            targetMargin:30,
+            items:[]
+        };
+
+    if(!r.items.length){
+
+        r.items.push({
+            ingredientId:data.ingredients[0]?.id || "",
+            qtyPerKg:1,
+            perSandwich:0
+        });
+    }
+
+    openModal(
+        existing ? "تعديل الساندوتش" : "إضافة ساندوتش",
+        recipeFormHtml(r),
+        [
+            {
+                text:"حفظ",
+                className:"btn btn-primary",
+                action:()=>saveRecipeFromModal(r,existing)
+            },
+            {
+                text:"إلغاء",
+                className:"btn btn-secondary",
+                action:closeModal
+            }
+        ]
+    );
+
+    bindRecipeModalRows();
+}
+
+
+function recipeFormHtml(r){
+
+    return `
+
+        <div class="form-grid">
+
+            <div class="field full">
+                <label>اسم الساندوتش</label>
+                <input
+                    class="input"
+                    id="modalRecipeName"
+                    value="${escapeHtml(r.name)}"
+                    placeholder="مثال: ساندوتش برجر"
+                >
+            </div>
+
+            <div class="field">
+                <label>الإنتاج من كل كيلو</label>
+                <input
+                    class="input"
+                    id="modalRecipeYield"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="${num(r.yield)}"
+                >
+            </div>
+
+            <div class="field">
+                <label>سعر البيع</label>
+                <input
+                    class="input"
+                    id="modalRecipePrice"
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value="${num(r.salePrice) || ""}"
+                >
+            </div>
+
+            <div class="field">
+                <label>هامش الربح المستهدف %</label>
+                <input
+                    class="input"
+                    id="modalRecipeMargin"
+                    type="number"
+                    min="0"
+                    max="99.99"
+                    step="0.1"
+                    value="${num(r.targetMargin)}"
+                >
+            </div>
+
+        </div>
+
+
+        <div style="margin-top:20px">
+
+            <div class="recipe-details-title">
+
+                <span>مكونات الوصفة</span>
+
+                <button
+                    class="btn btn-secondary"
+                    id="modalAddRecipeItem"
+                    style="min-height:36px;padding:0 10px;font-size:11px"
+                >
+                    + إضافة مكون
+                </button>
+
+            </div>
+
+            <div
+                class="dynamic-rows"
+                id="modalRecipeItems"
+            >
+
+                ${
+                    r.items.map((item,index)=>
+                        recipeModalRow(item,index)
+                    ).join("")
+                }
+
+            </div>
+
+            <div class="modal-note">
+                الكمية لكل كيلو تستخدم في مرحلة الإنتاج.
+                الكمية لكل ساندوتش مثل الفينو والتغليف والطحينة
+                تُخصم عند تسجيل البيع.
+            </div>
+
+        </div>
+    `;
+}
+
+
+function recipeModalRow(item,index){
+
+    return `
+
+        <div
+            class="dynamic-row"
+            data-modal-row="${index}"
+        >
+
+            <select
+                data-modal-field="ingredientId"
+                data-index="${index}"
+            >
+
+                ${
+                    data.ingredients.map(i=>`
+
+                        <option
+                            value="${i.id}"
+                            ${i.id===item.ingredientId ? "selected":""}
+                        >
+                            ${escapeHtml(i.name)}
+                        </option>
+
+                    `).join("")
+                }
+
+            </select>
+
+            <input
+                type="number"
+                min="0"
+                step="0.001"
+                placeholder="لكل كيلو"
+                value="${num(item.qtyPerKg)}"
+                data-modal-field="qtyPerKg"
+                data-index="${index}"
+            >
+
+            <input
+                type="number"
+                min="0"
+                step="0.001"
+                placeholder="لكل ساندوتش"
+                value="${num(item.perSandwich)}"
+                data-modal-field="perSandwich"
+                data-index="${index}"
+            >
+
+            <button
+                type="button"
+                class="remove-row"
+                data-modal-remove="${index}"
+            >
+                ×
+            </button>
+
+        </div>
+    `;
+}
+
+
+function bindRecipeModalRows(){
+
+    const add = $("#modalAddRecipeItem");
+
+    if(add){
+
+        add.onclick = ()=>{
+
+            const container =
+                $("#modalRecipeItems");
+
+            const index =
+                container.children.length;
+
+            container.insertAdjacentHTML(
+                "beforeend",
+                recipeModalRow({
+                    ingredientId:data.ingredients[0]?.id || "",
+                    qtyPerKg:0,
+                    perSandwich:0
+                },index)
+            );
+
+            bindRecipeModalRows();
+        };
+    }
+
+
+    $$("[data-modal-remove]").forEach(btn=>{
+
+        btn.onclick = ()=>{
+
+            const row =
+                btn.closest("[data-modal-row]");
+
+            row?.remove();
+
+            /*
+               إعادة ترقيم الصفوف
+            */
+
+            $$("#modalRecipeItems .dynamic-row")
+                .forEach((row,index)=>{
+
+                    row.dataset.modalRow=index;
+
+                    $$("[data-index]",row)
+                        .forEach(input=>{
+                            input.dataset.index=index;
+                        });
+
+                    const remove =
+                        $("[data-modal-remove]",row);
+
+                    if(remove){
+                        remove.dataset.modalRemove=index;
+                    }
+                });
+        };
+    });
+}
+
+
+function saveRecipeFromModal(r,existing){
+
+    const name =
+        $("#modalRecipeName").value.trim();
+
+    const y =
+        num($("#modalRecipeYield").value);
+
+    const price =
+        num($("#modalRecipePrice").value);
+
+    const margin =
+        num($("#modalRecipeMargin").value);
+
+    if(!name){
+        toast("اكتب اسم الساندوتش.");
+        return;
+    }
+
+    if(y<=0){
+        toast("الإنتاج من الكيلو يجب أن يكون أكبر من صفر.");
+        return;
+    }
+
+    const items =
+        $$("#modalRecipeItems .dynamic-row")
+            .map(row=>{
+
+                return {
+                    ingredientId:
+                        $("[data-modal-field='ingredientId']",row)?.value,
+
+                    qtyPerKg:
+                        num($("[data-modal-field='qtyPerKg']",row)?.value),
+
+                    perSandwich:
+                        num($("[data-modal-field='perSandwich']",row)?.value)
+                };
+
+            })
+            .filter(x=>x.ingredientId)
+            .filter(x=>x.qtyPerKg>0 || x.perSandwich>0);
+
+    r.name=name;
+    r.yield=y;
+    r.salePrice=price;
+    r.targetMargin=Math.min(99.99,Math.max(0,margin));
+    r.items=items;
+
+    if(existing){
+
+        const index =
+            data.recipes.findIndex(x=>x.id===r.id);
+
+        if(index>=0){
+            data.recipes[index]=r;
+        }
+
+    }else{
+
+        data.recipes.push(r);
+
+        if(
+            data.finishedStock[r.id] === undefined
+        ){
+            data.finishedStock[r.id]=0;
+        }
+    }
+
+    saveData();
+    closeModal();
+    renderPricing();
+
+    toast("تم حفظ الساندوتش.");
+}
+
+
+function deleteRecipe(id){
+
+    const r = recipe(id);
+
+    if(!r){
+        return;
+    }
+
+    const ok =
+        confirm(
+            `هل تريد حذف "${r.name}"؟`
+        );
+
+    if(!ok){
+        return;
+    }
+
+    data.recipes =
+        data.recipes.filter(x=>x.id!==id);
+
+    delete data.finishedStock[id];
+
+    saveData();
+
+    renderPricing();
+
+    toast("تم حذف الساندوتش.");
+}
+
+
+/* =========================================================
+   INVENTORY RENDER
+========================================================= */
+
+function renderInventory(){
+
+    renderDashboard();
+
+    const body = $("#inventoryTableBody");
+
+    body.innerHTML =
+        data.ingredients.map(i=>{
+
+            const value =
+                num(i.qty)*num(i.price);
+
+            const low =
+                num(i.qty)<num(i.min);
+
+            return `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHtml(i.name)}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <input
+                            class="qty-input inventory-qty"
+                            type="number"
+                            min="0"
+                            step="0.001"
+                            value="${num(i.qty)}"
+                            data-id="${i.id}"
+                        >
+                    </td>
+
+                    <td>${escapeHtml(i.unit)}</td>
+
+                    <td>${money(i.price)}</td>
+
+                    <td>${money(value)}</td>
+
+                    <td>${number(i.min,3)}</td>
+
+                    <td>
+                        <span class="stock-status ${low ? "status-low":"status-ok"}">
+                            ${low ? "منخفض":"جيد"}
+                        </span>
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+    $$(".inventory-qty").forEach(input=>{
+
+        input.addEventListener("change",()=>{
+
+            const i =
+                ingredient(input.dataset.id);
+
+            if(!i){
+                return;
+            }
+
+            const value =
+                Math.max(0,num(input.value));
+
+            i.qty=value;
+
+            saveData();
+
+            renderInventory();
+
+            toast("تم تحديث المخزون.");
+        });
+    });
+
+    renderCapacity();
+    renderInventoryMetrics();
+}
+
+
+function renderInventoryMetrics(){
+
+    const sales =
+        salesSummary();
+
+    $("#inventoryMetrics").innerHTML = `
+
+        <div class="card metric">
+            <div class="metric-label">قيمة المخزون</div>
+            <div class="metric-value">${money(inventoryValue())}</div>
+            <div class="metric-sub">الخامات الحالية</div>
+        </div>
+
+        <div class="card metric">
+            <div class="metric-label">خامات منخفضة</div>
+            <div class="metric-value">${number(lowStockCount())}</div>
+            <div class="metric-sub">تحتاج توريد</div>
+        </div>
+
+        <div class="card metric">
+            <div class="metric-label">ربح اليوم</div>
+            <div class="metric-value">${money(sales.todayProfit)}</div>
+            <div class="metric-sub">من المبيعات المسجلة</div>
+        </div>
+
+        <div class="card metric">
+            <div class="metric-label">ربح الشهر</div>
+            <div class="metric-value">${money(sales.monthProfit)}</div>
+            <div class="metric-sub">من بداية الشهر</div>
+        </div>
+
+    `;
+}
+
+
+function renderCapacity(){
+
+    $("#capacityGrid").innerHTML =
+        data.recipes.map(r=>{
+
+            const cap =
+                recipeCapacity(r);
+
+            return `
+
+                <div class="capacity-card">
+
+                    <h3>
+                        ${escapeHtml(r.name)}
+                    </h3>
+
+                    <div class="capacity-number">
+                        ${number(cap.sandwiches)}
+                    </div>
+
+                    <div class="capacity-limit">
+                        ساندوتش تقريبًا قبل نفاد:
+                        <strong>
+                            ${escapeHtml(cap.limiting)}
+                        </strong>
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+}
+
+
+/* =========================================================
+   PURCHASE
+========================================================= */
+
+function openPurchaseModal(){
+
+    const today = dateISO();
+
+    openModal(
+        "تسجيل توريد / شراء",
+        `
+
+        <div class="form-grid">
+
+            <div class="field full">
+
+                <label>الخامة</label>
+
+                <select class="input" id="purchaseIngredient">
+
+                    ${
+                        data.ingredients.map(i=>`
+
+                            <option value="${i.id}">
+                                ${escapeHtml(i.name)}
+                                -- ${escapeHtml(i.unit)}
+                            </option>
+
+                        `).join("")
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="field">
+
+                <label>الكمية</label>
+
+                <input
+                    class="input"
+                    type="number"
+                    id="purchaseQty"
+                    min="0.001"
+                    step="0.001"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>سعر الوحدة وقت الشراء</label>
+
+                <input
+                    class="input"
+                    type="number"
+                    id="purchasePrice"
+                    min="0"
+                    step="0.01"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>التاريخ</label>
+
+                <input
+                    class="input"
+                    type="date"
+                    id="purchaseDate"
+                    value="${today}"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>ملاحظات</label>
+
+                <input
+                    class="input"
+                    id="purchaseNote"
+                    placeholder="اختياري"
+                >
+
+            </div>
+
+        </div>
+
+        `,
+        [
+            {
+                text:"حفظ التوريد",
+                className:"btn btn-primary",
+                action:savePurchase
+            },
+            {
+                text:"إلغاء",
+                className:"btn btn-secondary",
+                action:closeModal
+            }
+        ]
+    );
+
+    const first =
+        data.ingredients[0];
+
+    if(first){
+        $("#purchasePrice").value =
+            first.price;
+    }
+
+    $("#purchaseIngredient").addEventListener(
+        "change",
+        ()=>{
+            const i =
+                ingredient($("#purchaseIngredient").value);
+
+            $("#purchasePrice").value =
+                i ? i.price : "";
+        }
+    );
+}
+
+
+function savePurchase(){
+
+    const ingredientId =
+        $("#purchaseIngredient").value;
+
+    const qty =
+        num($("#purchaseQty").value);
+
+    const price =
+        num($("#purchasePrice").value);
+
+    const date =
+        $("#purchaseDate").value || dateISO();
+
+    const note =
+        $("#purchaseNote").value.trim();
+
+    const i =
+        ingredient(ingredientId);
+
+    if(!i){
+        toast("اختر الخامة.");
+        return;
+    }
+
+    if(qty<=0){
+        toast("أدخل كمية صحيحة.");
+        return;
+    }
+
+    if(price<0){
+        toast("السعر غير صحيح.");
+        return;
+    }
+
+    i.qty += qty;
+
+    if(price>0){
+        i.price=price;
+
+        if(i.id==="oil"){
+            data.settings.oilPrice=price;
+        }
+
+        if(i.id==="gas"){
+            data.settings.gasPrice=price;
+        }
+    }
+
+    data.logs.unshift({
+        id:uid("log"),
+        type:"purchase",
+        date,
+        createdAt:dateTime(),
+        ingredientId,
+        quantity:qty,
+        unitPrice:price,
+        total:qty*price,
+        note
+    });
+
+    saveData();
+
+    closeModal();
+    renderInventory();
+    renderIngredients();
+    renderPricing();
+
+    toast("تم تسجيل التوريد وتحديث المخزون.");
+}
+
+
+/* =========================================================
+   PRODUCTION
+========================================================= */
+
+function openProductionModal(){
+
+    openModal(
+        "تسجيل تشغيل / إنتاج",
+        `
+
+        <div class="form-grid">
+
+            <div class="field full">
+
+                <label>نوع الساندوتش</label>
+
+                <select class="input" id="productionRecipe">
+
+                    ${
+                        data.recipes.map(r=>`
+
+                            <option value="${r.id}">
+                                ${escapeHtml(r.name)}
+                            </option>
+
+                        `).join("")
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="field">
+
+                <label>كم كيلو تم تشغيله؟</label>
+
+                <input
+                    class="input"
+                    type="number"
+                    id="productionKg"
+                    min="0.001"
+                    step="0.001"
+                    value="1"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>التاريخ</label>
+
+                <input
+                    class="input"
+                    type="date"
+                    id="productionDate"
+                    value="${dateISO()}"
+                >
+
+            </div>
+
+        </div>
+
+        <div
+            class="modal-note"
+            id="productionPreview"
+        ></div>
+
+        `,
+        [
+            {
+                text:"تسجيل الإنتاج",
+                className:"btn btn-primary",
+                action:saveProduction
+            },
+            {
+                text:"إلغاء",
+                className:"btn btn-secondary",
+                action:closeModal
+            }
+        ]
+    );
+
+    updateProductionPreview();
+
+    $("#productionRecipe").addEventListener(
+        "change",
+        updateProductionPreview
+    );
+
+    $("#productionKg").addEventListener(
+        "input",
+        updateProductionPreview
+    );
+}
+
+
+function productionRequirements(r,kg){
+
+    const requirements = [];
+
+    for(const item of r.items){
+
+        if(num(item.qtyPerKg)<=0){
+            continue;
+        }
+
+        requirements.push({
+            ingredientId:item.ingredientId,
+            qty:num(item.qtyPerKg)*kg
+        });
+    }
+
+    if(num(data.settings.oilPerKg)>0){
+
+        requirements.push({
+            ingredientId:"oil",
+            qty:num(data.settings.oilPerKg)*kg
+        });
+    }
+
+    if(
+        num(data.settings.kgPerGas)>0
+    ){
+
+        requirements.push({
+            ingredientId:"gas",
+            qty:kg/num(data.settings.kgPerGas)
+        });
+    }
+
+    return requirements;
+}
+
+
+function updateProductionPreview(){
+
+    const r =
+        recipe($("#productionRecipe")?.value);
+
+    if(!r){
+        return;
+    }
+
+    const kg =
+        num($("#productionKg")?.value);
+
+    const sandwiches =
+        Math.floor(kg*num(r.yield));
+
+    const req =
+        productionRequirements(r,kg);
+
+    $("#productionPreview").innerHTML = `
+
+        سيتم إنتاج حوالي
+        <strong>${number(sandwiches)}</strong>
+        ساندوتش.
+
+        <br><br>
+
+        الخامات التي سيتم خصمها:
+
+        <br>
+
+        ${
+            req.map(x=>`
+
+                ${escapeHtml(ingredientName(x.ingredientId))}
+                :
+                <strong>${number(x.qty,3)}</strong>
+
+            `).join(" -- ")
+        }
+
+    `;
+}
+
+
+function saveProduction(){
+
+    const r =
+        recipe($("#productionRecipe").value);
+
+    const kg =
+        num($("#productionKg").value);
+
+    const date =
+        $("#productionDate").value || dateISO();
+
+    if(!r){
+        toast("اختر الساندوتش.");
+        return;
+    }
+
+    if(kg<=0){
+        toast("أدخل كمية تشغيل صحيحة.");
+        return;
+    }
+
+    const req =
+        productionRequirements(r,kg);
+
+    const insufficient =
+        req.filter(x=>{
+
+            const i =
+                ingredient(x.ingredientId);
+
+            return !i || num(i.qty) < num(x.qty);
+
+        });
+
+    if(insufficient.length){
+
+        toast(
+            "المخزون غير كافٍ: " +
+            insufficient.map(
+                x=>ingredientName(x.ingredientId)
+            ).join("، ")
+        );
+
+        return;
+    }
+
+    for(const x of req){
+
+        const i =
+            ingredient(x.ingredientId);
+
+        i.qty -= x.qty;
+    }
+
+    const sandwiches =
+        Math.floor(kg*num(r.yield));
+
+    data.finishedStock[r.id] =
+        num(data.finishedStock[r.id]) +
+        sandwiches;
+
+    data.logs.unshift({
+        id:uid("log"),
+        type:"production",
+        date,
+        createdAt:dateTime(),
+        recipeId:r.id,
+        kg,
+        sandwichesProduced:sandwiches,
+        consumed:req
+    });
+
+    saveData();
+
+    closeModal();
+
+    renderInventory();
+    renderPricing();
+
+    toast(
+        `تم تسجيل إنتاج ${number(sandwiches)} ساندوتش.`
+    );
+}
+
+
+/* =========================================================
+   SALE
+========================================================= */
+
+function openSaleModal(){
+
+    openModal(
+        "تسجيل بيع",
+        `
+
+        <div class="form-grid">
+
+            <div class="field full">
+
+                <label>نوع الساندوتش</label>
+
+                <select class="input" id="saleRecipe">
+
+                    ${
+                        data.recipes.map(r=>`
+
+                            <option value="${r.id}">
+                                ${escapeHtml(r.name)}
+                                -- المتاح:
+                                ${number(data.finishedStock[r.id])}
+                            </option>
+
+                        `).join("")
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="field">
+
+                <label>عدد الساندوتشات المباعة</label>
+
+                <input
+                    class="input"
+                    type="number"
+                    id="saleQty"
+                    min="1"
+                    step="1"
+                    value="1"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>سعر البيع الفعلي للساندوتش</label>
+
+                <input
+                    class="input"
+                    type="number"
+                    id="salePrice"
+                    min="0"
+                    step="0.5"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>التاريخ</label>
+
+                <input
+                    class="input"
+                    type="date"
+                    id="saleDate"
+                    value="${dateISO()}"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="modal-note" id="salePreview"></div>
+
+        `,
+        [
+            {
+                text:"تسجيل البيع",
+                className:"btn btn-primary",
+                action:saveSale
+            },
+            {
+                text:"إلغاء",
+                className:"btn btn-secondary",
+                action:closeModal
+            }
+        ]
+    );
+
+    updateSalePrice();
+
+    $("#saleRecipe").addEventListener(
+        "change",
+        updateSalePrice
+    );
+
+    $("#saleQty").addEventListener(
+        "input",
+        updateSalePreview
+    );
+
+    $("#salePrice").addEventListener(
+        "input",
+        updateSalePreview
+    );
+}
+
+
+function updateSalePrice(){
+
+    const r =
+        recipe($("#saleRecipe").value);
+
+    if(!r){
+        return;
+    }
+
+    $("#salePrice").value =
+        num(r.salePrice) || "";
+
+    updateSalePreview();
+}
+
+
+function updateSalePreview(){
+
+    const r =
+        recipe($("#saleRecipe")?.value);
+
+    if(!r){
+        return;
+    }
+
+    const qty =
+        num($("#saleQty")?.value);
+
+    const price =
+        num($("#salePrice")?.value);
+
+    const calc =
+        calculateRecipe(r);
+
+    const revenue =
+        qty*price;
+
+    const profit =
+        qty*(price-calc.costPerSandwich);
+
+    $("#salePreview").innerHTML = `
+
+        إجمالي البيع:
+        <strong>${money(revenue)}</strong>
+
+        <br>
+
+        الربح المتوقع:
+        <strong>${money(profit)}</strong>
+
+    `;
+}
+
+
+function saveSale(){
+
+    const r =
+        recipe($("#saleRecipe").value);
+
+    const qty =
+        Math.floor(num($("#saleQty").value));
+
+    const price =
+        num($("#salePrice").value);
+
+    const date =
+        $("#saleDate").value || dateISO();
+
+    if(!r){
+        toast("اختر الساندوتش.");
+        return;
+    }
+
+    if(qty<=0){
+        toast("عدد الساندوتشات يجب أن يكون أكبر من صفر.");
+        return;
+    }
+
+    const finished =
+        num(data.finishedStock[r.id]);
+
+    if(qty>finished){
+
+        toast(
+            `المتاح للبيع ${number(finished)} فقط.`
+        );
+
+        return;
+    }
+
+    if(price<=0){
+        toast("أدخل سعر البيع.");
+        return;
+    }
+
+    /*
+       في مرحلة البيع يتم خصم الخامات
+       المحددة كـ perSandwich:
+       فينو، تغليف، طحينة...
+    */
+
+    const deductions = [];
+
+    for(const item of r.items){
+
+        if(num(item.perSandwich)<=0){
+            continue;
+        }
+
+        const required =
+            num(item.perSandwich)*qty;
+
+        const i =
+            ingredient(item.ingredientId);
+
+        if(!i || num(i.qty)<required){
+
+            toast(
+                `المخزون غير كافٍ من ${ingredientName(item.ingredientId)}`
+            );
+
+            return;
+        }
+
+        deductions.push({
+            ingredientId:item.ingredientId,
+            qty:required
+        });
+    }
+
+    for(const d of deductions){
+
+        const i =
+            ingredient(d.ingredientId);
+
+        i.qty -= d.qty;
+    }
+
+    data.finishedStock[r.id] =
+        finished-qty;
+
+    const calc =
+        calculateRecipe(r);
+
+    const revenue =
+        qty*price;
+
+    const profit =
+        qty*(price-calc.costPerSandwich);
+
+    data.logs.unshift({
+
+        id:uid("log"),
+
+        type:"sale",
+
+        date,
+
+        createdAt:dateTime(),
+
+        recipeId:r.id,
+
+        quantity:qty,
+
+        sellingPrice:price,
+
+        revenue,
+
+        unitCost:calc.costPerSandwich,
+
+        profit,
+
+        deductions
+
+    });
+
+    saveData();
+
+    closeModal();
+
+    renderInventory();
+    renderPricing();
+
+    toast(
+        `تم تسجيل بيع ${number(qty)} ساندوتش.`
+    );
+}
+
+
+/* =========================================================
+   INVENTORY LOGS
+========================================================= */
+
+function renderLogs(){
+
+    const type =
+        $("#logTypeFilter").value;
+
+    const from =
+        $("#logFromDate").value;
+
+    const to =
+        $("#logToDate").value;
+
+    const search =
+        $("#logSearch").value.trim().toLowerCase();
+
+    let logs =
+        [...data.logs];
+
+    if(type!=="all"){
+        logs =
+            logs.filter(x=>x.type===type);
+    }
+
+    if(from){
+        logs =
+            logs.filter(
+                x=>String(x.date)>=from
+            );
+    }
+
+    if(to){
+        logs =
+            logs.filter(
+                x=>String(x.date)<=to
+            );
+    }
+
+    if(search){
+
+        logs =
+            logs.filter(x=>{
+
+                const text =
+                    JSON.stringify(x).toLowerCase();
+
+                return text.includes(search);
+            });
+    }
+
+    $("#logsBody").innerHTML =
+        logs.length
+        ? logs.map(renderLogRow).join("")
+        : `
+            <tr>
+                <td colspan="6">
+                    <div class="empty">
+                        لا توجد حركات مطابقة.
+                    </div>
+                </td>
+            </tr>
+        `;
+}
+
+
+function renderLogRow(log){
+
+    let typeLabel = "";
+    let details = "";
+    let quantity = "";
+    let value = "";
+    let profit = "--";
+
+    if(log.type==="purchase"){
+
+        typeLabel="توريد";
+
+        details =
+            ingredientName(log.ingredientId);
+
+        quantity =
+            number(log.quantity,3);
+
+        value =
+            money(log.total);
+    }
+
+    if(log.type==="production"){
+
+        typeLabel="إنتاج";
+
+        const r =
+            recipe(log.recipeId);
+
+        details =
+            r?.name || "ساندوتش";
+
+        quantity =
+            `${number(log.kg,3)} كجم / ${number(log.sandwichesProduced)} ساندوتش`;
+
+        value="--";
+    }
+
+    if(log.type==="sale"){
+
+        typeLabel="بيع";
+
+        const r =
+            recipe(log.recipeId);
+
+        details =
+            r?.name || "ساندوتش";
+
+        quantity =
+            number(log.quantity);
+
+        value =
+            money(log.revenue);
+
+        profit =
+            money(log.profit);
+    }
+
+    return `
+
+        <tr>
+
+            <td>
+                ${escapeHtml(log.date || "")}
+            </td>
+
+            <td>
+                ${typeLabel}
+            </td>
+
+            <td>
+                ${escapeHtml(details)}
+            </td>
+
+            <td>
+                ${quantity}
+            </td>
+
+            <td>
+                ${value}
+            </td>
+
+            <td>
+                ${profit}
+            </td>
+
+        </tr>
+    `;
+}
+
+
+["logTypeFilter","logFromDate","logToDate","logSearch"]
+.forEach(id=>{
+
+    $("#" + id).addEventListener(
+        id==="logSearch" ? "input":"change",
+        renderLogs
+    );
+
+});
+
+
+/* =========================================================
+   INGREDIENTS
+========================================================= */
+
+function renderIngredients(){
+
+    syncOperatingPrices();
+
+    $("#ingredientsBody").innerHTML =
+        data.ingredients.map(i=>`
+
+            <tr>
+
+                <td>
+                    <strong>
+                        ${escapeHtml(i.name)}
+                    </strong>
+                </td>
+
+                <td>
+                    ${escapeHtml(i.unit)}
+                </td>
+
+                <td>
+                    ${money(i.price)}
+                </td>
+
+                <td>
+                    ${number(i.min,3)}
+                </td>
+
+                <td>
+                    ${number(i.qty,3)}
+                </td>
+
+                <td>
+
+                    <div style="display:flex;gap:6px">
+
+                        <button
+                            class="icon-btn"
+                            data-edit-ingredient="${i.id}"
+                            title="تعديل"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="m4 20 4.5-1 10-10a2 2 0 0 0-3-3l-10 10Z"/>
+                                <path d="m14.5 6.5 3 3"/>
+                            </svg>
+                        </button>
+
+                        <button
+                            class="icon-btn"
+                            data-delete-ingredient="${i.id}"
+                            title="حذف"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M5 7h14"/>
+                                <path d="M10 11v6"/>
+                                <path d="M14 11v6"/>
+                                <path d="m8 7 1-3h6l1 3"/>
+                                <path d="M7 7l1 14h8l1-14"/>
+                            </svg>
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `).join("");
+
+
+    $$("[data-edit-ingredient]").forEach(btn=>{
+        btn.addEventListener(
+            "click",
+            ()=>openIngredientModal(btn.dataset.editIngredient)
+        );
+    });
+
+
+    $$("[data-delete-ingredient]").forEach(btn=>{
+        btn.addEventListener(
+            "click",
+            ()=>deleteIngredient(btn.dataset.deleteIngredient)
+        );
+    });
+}
+
+
+function openIngredientModal(id=null){
+
+    const existing =
+        id ? ingredient(id) : null;
+
+    openModal(
+        existing ? "تعديل خامة" : "إضافة خامة",
+        `
+
+        <div class="form-grid">
+
+            <div class="field full">
+
+                <label>اسم الخامة</label>
+
+                <input
+                    class="input"
+                    id="ingredientName"
+                    value="${existing ? escapeHtml(existing.name):""}"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>الوحدة</label>
+
+                <select class="input" id="ingredientUnit">
+
+                    ${
+                        [
+                            "كيلو",
+                            "جرام",
+                            "رغيف",
+                            "قطعة",
+                            "لتر",
+                            "أنبوبة",
+                            "ساندوتش"
+                        ].map(u=>`
+
+                            <option
+                                ${existing?.unit===u ? "selected":""}
+                            >
+                                ${u}
+                            </option>
+
+                        `).join("")
+                    }
+
+                </select>
+
+            </div>
+
+            <div class="field">
+
+                <label>السعر</label>
+
+                <input
+                    class="input"
+                    id="ingredientPrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="${existing ? num(existing.price):""}"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>الحد الأدنى للمخزون</label>
+
+                <input
+                    class="input"
+                    id="ingredientMin"
+                    type="number"
+                    min="0"
+                    step="0.001"
+                    value="${existing ? num(existing.min):0}"
+                >
+
+            </div>
+
+            ${
+                existing
+                ? `
+                    <div class="field">
+                        <label>الكمية الحالية</label>
+                        <input
+                            class="input"
+                            id="ingredientQty"
+                            type="number"
+                            min="0"
+                            step="0.001"
+                            value="${num(existing.qty)}"
+                        >
+                    </div>
+                `
+                : ""
+            }
+
+        </div>
+
+        `,
+        [
+            {
+                text:"حفظ",
+                className:"btn btn-primary",
+                action:()=>saveIngredient(id)
+            },
+            {
+                text:"إلغاء",
+                className:"btn btn-secondary",
+                action:closeModal
+            }
+        ]
+    );
+}
+
+
+function saveIngredient(id){
+
+    const name =
+        $("#ingredientName").value.trim();
+
+    const unit =
+        $("#ingredientUnit").value;
+
+    const price =
+        num($("#ingredientPrice").value);
+
+    const min =
+        num($("#ingredientMin").value);
+
+    if(!name){
+        toast("اكتب اسم الخامة.");
+        return;
+    }
+
+    if(id){
+
+        const i =
+            ingredient(id);
+
+        if(!i){
+            return;
+        }
+
+        i.name=name;
+        i.unit=unit;
+        i.price=price;
+        i.min=Math.max(0,min);
+
+        if($("#ingredientQty")){
+            i.qty =
+                Math.max(
+                    0,
+                    num($("#ingredientQty").value)
+                );
+        }
+
+        if(id==="oil"){
+            data.settings.oilPrice=price;
+        }
+
+        if(id==="gas"){
+            data.settings.gasPrice=price;
+        }
+
+    }else{
+
+        data.ingredients.push({
+
+            id:uid("ing"),
+
+            name,
+
+            unit,
+
+            price,
+
+            qty:0,
+
+            min:Math.max(0,min)
+
+        });
+    }
+
+    saveData();
+
+    closeModal();
+
+    renderIngredients();
+    renderInventory();
+    renderPricing();
+
+    toast("تم حفظ الخامة.");
+}
+
+
+function deleteIngredient(id){
+
+    const usedBy =
+        data.recipes.some(r=>
+            r.items.some(x=>x.ingredientId===id)
+        );
+
+    if(usedBy){
+
+        toast(
+            "لا يمكن حذف خامة مستخدمة داخل وصفة. عدّل الوصفات أولًا."
+        );
+
+        return;
+    }
+
+    const i =
+        ingredient(id);
+
+    if(!i){
+        return;
+    }
+
+    if(
+        !confirm(
+            `هل تريد حذف "${i.name}"؟`
+        )
+    ){
+        return;
+    }
+
+    data.ingredients =
+        data.ingredients.filter(x=>x.id!==id);
+
+    saveData();
+
+    renderIngredients();
+    renderInventory();
+    renderPricing();
+
+    toast("تم حذف الخامة.");
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function renderSettings(){
+
+    $("#oilPerKg").value =
+        data.settings.oilPerKg;
+
+    $("#kgPerGas").value =
+        data.settings.kgPerGas;
+
+    $("#oilPriceSetting").value =
+        data.settings.oilPrice;
+
+    $("#gasPriceSetting").value =
+        data.settings.gasPrice;
+}
+
+
+$("#saveSettingsBtn").addEventListener("click",()=>{
+
+    const oilPerKg =
+        num($("#oilPerKg").value);
+
+    const kgPerGas =
+        num($("#kgPerGas").value);
+
+    const oilPrice =
+        num($("#oilPriceSetting").value);
+
+    const gasPrice =
+        num($("#gasPriceSetting").value);
+
+    if(oilPerKg<0){
+        toast("استهلاك الزيت غير صحيح.");
+        return;
+    }
+
+    if(kgPerGas<=0){
+        toast("عدد كيلو الغاز يجب أن يكون أكبر من صفر.");
+        return;
+    }
+
+    data.settings.oilPerKg=oilPerKg;
+    data.settings.kgPerGas=kgPerGas;
+    data.settings.oilPrice=oilPrice;
+    data.settings.gasPrice=gasPrice;
+
+    syncOperatingPrices();
+
+    saveData();
+
+    renderSettings();
+    renderPricing();
+    renderInventory();
+
+    toast("تم حفظ إعدادات التشغيل.");
+});
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function openSearchModal(){
+
+    openModal(
+        "بحث سريع",
+        `
+
+        <div class="field">
+
+            <label>اكتب اسم خامة أو ساندوتش</label>
+
+            <input
+                class="input"
+                id="globalSearch"
+                placeholder="مثال: كبدة"
+                autofocus
+            >
+
+        </div>
+
+        <div
+            class="search-results"
+            id="globalSearchResults"
+        ></div>
+
+        `,
+        [
+            {
+                text:"إغلاق",
+                className:"btn btn-secondary",
+                action:closeModal
+            }
+        ]
+    );
+
+    $("#globalSearch").addEventListener(
+        "input",
+        renderSearchResults
+    );
+
+    renderSearchResults();
+
+    setTimeout(()=>{
+        $("#globalSearch")?.focus();
+    },100);
+}
+
+
+function renderSearchResults(){
+
+    const q =
+        ($("#globalSearch")?.value || "")
+            .trim()
+            .toLowerCase();
+
+    const results=[];
+
+    data.recipes.forEach(r=>{
+
+        if(
+            !q ||
+            r.name.toLowerCase().includes(q)
+        ){
+
+            results.push({
+                type:"ساندوتش",
+                name:r.name,
+                action:()=>{
+                    closeModal();
+                    openTab("pricing");
+
+                    setTimeout(()=>{
+
+                        const el =
+                            document.querySelector(
+                                `[data-recipe-card="${r.id}"]`
+                            );
+
+                        el?.scrollIntoView({
+                            behavior:"smooth",
+                            block:"center"
+                        });
+
+                    },200);
+                }
+            });
+        }
+    });
+
+
+    data.ingredients.forEach(i=>{
+
+        if(
+            !q ||
+            i.name.toLowerCase().includes(q)
+        ){
+
+            results.push({
+                type:"خامة",
+                name:i.name,
+                action:()=>{
+                    closeModal();
+                    openTab("ingredients");
+                }
+            });
+        }
+    });
+
+
+    $("#globalSearchResults").innerHTML =
+        results.length
+        ? results.slice(0,20).map((x,index)=>`
+
+            <button
+                class="search-result"
+                data-search-index="${index}"
+                style="text-align:right;width:100%;background:#fff"
+            >
+                <strong>${escapeHtml(x.name)}</strong>
+                <span>${x.type}</span>
+            </button>
+
+        `).join("")
+        : `
+            <div class="empty">
+                لا توجد نتائج.
+            </div>
+        `;
+
+
+    $$(".search-result").forEach((btn,index)=>{
+
+        btn.addEventListener(
+            "click",
+            ()=>results[index].action()
+        );
+
+    });
+}
+
+
+/* =========================================================
+   MODAL SYSTEM
+========================================================= */
+
+function openModal(title,body,buttons=[]){
+
+    $("#modalTitle").textContent=title;
+
+    $("#modalBody").innerHTML=body;
+
+    $("#modalFooter").innerHTML="";
+
+    buttons.forEach(btn=>{
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            btn.className || "btn btn-secondary";
+
+        button.textContent =
+            btn.text;
+
+        button.addEventListener(
+            "click",
+            btn.action
+        );
+
+        $("#modalFooter").appendChild(button);
+    });
+
+    $("#modalBackdrop").classList.add("open");
+}
+
+function closeModal(){
+    $("#modalBackdrop").classList.remove("open");
+}
+
+$("#modalClose").addEventListener(
+    "click",
+    closeModal
+);
+
+$("#modalBackdrop").addEventListener(
+    "click",
+    event=>{
+        if(event.target === $("#modalBackdrop")){
+            closeModal();
+        }
+    }
+);
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+$("#addRecipeBtn").addEventListener(
+    "click",
+    ()=>openRecipeModal()
+);
+
+$("#purchaseBtn").addEventListener(
+    "click",
+    openPurchaseModal
+);
+
+$("#productionBtn").addEventListener(
+    "click",
+    openProductionModal
+);
+
+$("#saleBtn").addEventListener(
+    "click",
+    openSaleModal
+);
+
+$("#addIngredientBtn").addEventListener(
+    "click",
+    ()=>openIngredientModal()
+);
+
+$("#ingredientFromInventoryBtn").addEventListener(
+    "click",
+    ()=>openIngredientModal()
+);
+
+
+/* =========================================================
+   EXPORT JSON
+========================================================= */
+
+$("#exportJsonBtn").addEventListener(
+    "click",
+    ()=>{
+
+        const blob =
+            new Blob(
+                [
+                    JSON.stringify(data,null,2)
+                ],
+                {
+                    type:"application/json;charset=utf-8"
+                }
+            );
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const a =
+            document.createElement("a");
+
+        a.href=url;
+        a.download="withfast-backup.json";
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        URL.revokeObjectURL(url);
+
+        toast("تم تصدير النسخة الاحتياطية.");
+    }
+);
+
+
+/* =========================================================
+   IMPORT JSON
+========================================================= */
+
+$("#importJsonBtn").addEventListener(
+    "click",
+    ()=>{
+        $("#importJsonFile").click();
+    }
+);
+
+$("#importJsonFile").addEventListener(
+    "change",
+    event=>{
+
+        const file =
+            event.target.files[0];
+
+        if(!file){
+            return;
+        }
+
+        const reader =
+            new FileReader();
+
+        reader.onload = e=>{
+
+            try{
+
+                const imported =
+                    JSON.parse(e.target.result);
+
+                if(
+                    !imported ||
+                    !Array.isArray(imported.ingredients) ||
+                    !Array.isArray(imported.recipes)
+                ){
+                    throw new Error("invalid");
+                }
+
+                data =
+                    normalizeData(imported);
+
+                syncOperatingPrices();
+
+                saveData();
+
+                renderAll();
+
+                toast("تم استيراد البيانات بنجاح.");
+
+            }catch(error){
+
+                toast(
+                    "ملف النسخة الاحتياطية غير صالح."
+                );
+            }
+
+            event.target.value="";
+        };
+
+        reader.readAsText(file);
+    }
+);
+
+
+/* =========================================================
+   CSV EXPORT
+========================================================= */
+
+function csvCell(value){
+
+    const text =
+        String(value ?? "");
+
+    return `"${text.replaceAll('"','""')}"`;
+}
+
+function exportCSV(){
+
+    const rows=[];
+
+    rows.push([
+        "WITHFAST",
+        "تقرير كامل"
+    ]);
+
+    rows.push([]);
+
+    rows.push([
+        "الخامات",
+        "الوحدة",
+        "السعر",
+        "الكمية",
+        "قيمة المخزون",
+        "الحد الأدنى"
+    ]);
+
+    data.ingredients.forEach(i=>{
+
+        rows.push([
+            i.name,
+            i.unit,
+            i.price,
+            i.qty,
+            num(i.qty)*num(i.price),
+            i.min
+        ]);
+    });
+
+    rows.push([]);
+
+    rows.push([
+        "التسعير",
+        "التكلفة/ساندوتش",
+        "سعر البيع",
+        "الربح",
+        "هامش الربح"
+    ]);
+
+    data.recipes.forEach(r=>{
+
+        const c =
+            calculateRecipe(r);
+
+        rows.push([
+            r.name,
+            c.costPerSandwich,
+            c.selling,
+            c.profit,
+            c.margin
+        ]);
+    });
+
+    rows.push([]);
+
+    rows.push([
+        "السجلات"
+    ]);
+
+    rows.push([
+        "التاريخ",
+        "النوع",
+        "التفاصيل",
+        "الكمية",
+        "القيمة",
+        "الربح"
+    ]);
+
+    data.logs.forEach(log=>{
+
+        let details="";
+        let qty="";
+        let value="";
+        let profit="";
+
+        if(log.type==="purchase"){
+
+            details =
+                ingredientName(log.ingredientId);
+
+            qty=log.quantity;
+            value=log.total;
+        }
+
+        if(log.type==="production"){
+
+            details =
+                recipe(log.recipeId)?.name || "";
+
+            qty=log.sandwichesProduced;
+        }
+
+        if(log.type==="sale"){
+
+            details =
+                recipe(log.recipeId)?.name || "";
+
+            qty=log.quantity;
+            value=log.revenue;
+            profit=log.profit;
+        }
+
+        rows.push([
+            log.date,
+            log.type,
+            details,
+            qty,
+            value,
+            profit
+        ]);
+    });
+
+    const csv =
+        "\uFEFF" +
+        rows
+            .map(row=>
+                row
+                    .map(csvCell)
+                    .join(",")
+            )
+            .join("\n");
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:"text/csv;charset=utf-8;"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href=url;
+    a.download="withfast-report.csv";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+    toast("تم تصدير التقرير CSV.");
+}
+
+$("#exportCsvBtn").addEventListener(
+    "click",
+    exportCSV
+);
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+$("#printBtn").addEventListener(
+    "click",
+    ()=>{
+        window.print();
+    }
+);
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+$("#resetBtn").addEventListener(
+    "click",
+    ()=>{
+
+        const ok =
+            confirm(
+                "سيتم حذف البيانات الحالية وإرجاع البرنامج للوضع الافتراضي. هل أنت متأكد؟"
+            );
+
+        if(!ok){
+            return;
+        }
+
+        data =
+            deepClone(DEFAULT_DATA);
+
+        saveData();
+
+        renderAll();
+
+        toast("تمت إعادة البيانات الافتراضية.");
+    }
+);
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event=>{
+
+        if(event.key==="Escape"){
+            closeModal();
+        }
+
+        if(
+            event.ctrlKey &&
+            event.key.toLowerCase()==="s"
+        ){
+            event.preventDefault();
+            saveData();
+            toast("تم حفظ البيانات.");
+        }
+
+    }
+);
+
+
+/* =========================================================
+   RENDER ALL
+========================================================= */
+
+function renderAll(){
+
+    syncOperatingPrices();
+
+    renderPricing();
+    renderInventory();
+    renderIngredients();
+    renderSettings();
+    renderLogs();
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+renderAll();
+
+</script>
+
+</body>
+</html>
